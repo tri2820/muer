@@ -17,7 +17,27 @@ import { Range, getTrackBackground } from 'react-range';
 import Player from "~/components/Player";
 import ReactPlayer from "react-player";
 
+const SERVERS = [
+  'https://vid.priv.au',
+  'https://iv.melmac.space',
+  // 'https://inv.tux.pizza',
+  // 'https://inv.in.projectsegfau.lt',
+  'https://inv.makerlab.tech',
+  'https://invidious.slipfox.xyz',
+  'https://inv.pistasjis.net',
+  'https://par1.iv.ggtyler.dev',
+  'https://iv.melmac.space',
+  // 'https://invidious.lunar.icu',
+  'https://yt.oelrichsgarcia.de',
+  'https://inv.zzls.xyz'
+]
 
+const randomFetch = (input: string) => {
+  const randomServer = SERVERS[Math.floor(Math.random() * SERVERS.length)];
+  const inp = `${randomServer}/${input}`
+  console.log('debug randomFetch', inp)
+  return fetch(inp)
+}
 
 export async function loader({ request }: LoaderArgs) {
   // const { supabase, response } = useSupabase(request);
@@ -26,7 +46,7 @@ export async function loader({ request }: LoaderArgs) {
 
   try {
 
-    const trendingResponse = await fetch('https://iv.melmac.space/api/v1/trending?type=music');
+    const trendingResponse = await randomFetch('api/v1/trending?type=music');
     const trendingVideos = await trendingResponse.json();
     // TODO: Cache url
     // return trendingVideos;
@@ -42,9 +62,12 @@ export async function loader({ request }: LoaderArgs) {
 
 export async function action({ request, params }: ActionArgs) {
   const { videoId } = await request.json();
+
+  // Cache response
+
   try {
     console.log('Fetching video data')
-    const response = await fetch(`https://iv.melmac.space/api/v1/videos/${videoId}`);
+    const response = await randomFetch(`api/v1/videos/${videoId}`);
     const video = await response.json();
     console.log('got video');
     return json({ video });
@@ -70,14 +93,22 @@ export default function IndexPage() {
     loadedSeconds: 0,
     buffering: false,
     duration: undefined as (number | undefined),
-    progressValues: [0]
+    progressValues: [0],
+    error: false
   })
 
   const submit = useSubmit();
 
   useEffect(() => {
     const { video } = actionData || {};
-    setPlayingVideoData(video);
+    setPlayingVideoData((v) => {
+      if (!v) return video
+      return {
+        ...video,
+        videoThumbnails: v.videoThumbnails,
+      }
+    });
+
     setPlayerState({
       playing: video ? true : false,
       played: 0,
@@ -86,7 +117,8 @@ export default function IndexPage() {
       loadedSeconds: 0,
       buffering: false,
       duration: undefined,
-      progressValues: [0]
+      progressValues: [0],
+      error: false
     })
   }, [actionData])
 
@@ -117,7 +149,7 @@ export default function IndexPage() {
       author
     })
 
-    setPlayerState(p => ({
+    setPlayerState({
       playing: true,
       played: 0,
       playedSeconds: 0,
@@ -125,8 +157,9 @@ export default function IndexPage() {
       loadedSeconds: 0,
       buffering: true,
       duration: undefined,
-      progressValues: [0]
-    }))
+      progressValues: [0],
+      error: false
+    })
 
     submit(
       { videoId: videoId },
@@ -185,6 +218,10 @@ export default function IndexPage() {
     <div className="min-h-screen bg-black flex flex-col">
       {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(video)}</p> */}
       {/* <p className="bg-green-400 px-4 py-2">{JSON.stringify(playingVideoData)}</p> */}
+      {
+        playerState.error &&
+        <p className="bg-red-800 px-4 py-2 text-white">Cannot play this song, please try another</p>
+      }
 
       <div className="flex-grow flex mt-2 h-0 mx-2">
         <ResizableBox
@@ -224,6 +261,17 @@ export default function IndexPage() {
         ">
           <Player
             playerRef={playerRef}
+            onVideoError={() => {
+              setPlayerState(p => ({
+                ...p,
+                playing: true,
+                played: 0,
+                playedSeconds: 0,
+                loaded: 0,
+                loadedSeconds: 0,
+                error: true
+              }))
+            }}
             onReady={() => {
               setPlayerState(p => ({
                 ...p,
@@ -280,14 +328,16 @@ export default function IndexPage() {
                 duration
               }))
             }}
-            url={playingVideoData?.adaptiveFormats?.at(0)?.url}
+            // Or formatStreams
+            // Try only one url
+            urls={playingVideoData?.adaptiveFormats?.slice(0, 1).map((x: any) => x.url)}
           />
 
           <p className="text-white font-bold text-3xl">Good morning</p>
           <p className="text-white font-bold text-2xl py-8">Trending</p>
 
           {
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-5 gap-6">
               {
                 thumbnails
               }
@@ -312,7 +362,7 @@ export default function IndexPage() {
       <div className="flex-none bg-black h-20 grid grid-cols-5 px-4">
         <div className="col-span-1 flex space-x-4 items-center">
           <CImage
-            className="w-24 aspect-video object-cover rounded-lg"
+            className="w-14 aspect-square object-cover rounded-lg "
             src={playingVideoData?.videoThumbnails?.at(0)?.url}
             brokenImageCallback={() => {
               console.log('debug broken image')
