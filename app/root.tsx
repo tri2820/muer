@@ -23,7 +23,7 @@ import { useState } from "react";
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
 
 export const meta: MetaFunction = () => {
-  return { title: "GenMe" };
+  return { title: "Rider" };
 };
 
 export const links: LinksFunction = () => {
@@ -60,7 +60,7 @@ export default function App() {
       <body className="h-full font-inter">
         <Outlet context={{ supabase, env }} />
         <ScrollRestoration />
-        <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="genme.app" />
+        <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="rider.tri" />
         <Scripts />
         <LiveReload />
       </body>

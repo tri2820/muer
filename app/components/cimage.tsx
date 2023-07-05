@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export const CImage = ({ src, children, className, containerClassName, brokenImageCallback, displayPlaceholder, widthLargerThan = 1200, heightLargerThan = 600 }: any) => {
+export const CImage = ({ src, className, brokenImageCallback, displayPlaceholder, widthLargerThan = 0, heightLargerThan = 0 }: any) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
@@ -23,14 +23,7 @@ export const CImage = ({ src, children, className, containerClassName, brokenIma
     if (!src) return placeholder;
     if (!isLoaded) return placeholder;
 
-    return <div className={`relative ${containerClassName}`}>
-        <img src={src} alt="Preloaded Image" className={className} />
-        <div
-        // className='absolute bottom-0 w-full'
-        >
-            {children}
-        </div>
-    </div>
+    return <img src={src} alt="Preloaded Image" className={className} />
 };
 
 export default CImage;
