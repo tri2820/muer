@@ -1,7 +1,7 @@
-import { EllipsisVerticalIcon, PauseCircleIcon, BackwardIcon, ForwardIcon, RectangleGroupIcon, RectangleStackIcon } from "@heroicons/react/24/solid";
+import { EllipsisVerticalIcon, PauseCircleIcon, BackwardIcon, ForwardIcon, RectangleGroupIcon, RectangleStackIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import { Bars3BottomRightIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { z } from "zod";
 import CImage from "~/components/cimage";
 import { useSupabase } from "~/models/user.server";
@@ -12,6 +12,9 @@ import { useEffect, useState } from "react";
 import VideoThumbnail from "~/components/videoThumbnail";
 
 
+import Player from "~/components/Player";
+
+
 
 export async function loader({ request }: LoaderArgs) {
   // const { supabase, response } = useSupabase(request);
@@ -19,8 +22,10 @@ export async function loader({ request }: LoaderArgs) {
   // const page = parseInt(url.searchParams.get("page") ?? '0')
 
   try {
-    const trendingResponse = await fetch('https://iv.melmac.space/api/v1/trending');
+
+    const trendingResponse = await fetch('https://iv.melmac.space/api/v1/trending?type=music');
     const trendingVideos = await trendingResponse.json();
+    // TODO: Cache url
     // return trendingVideos;
     return json({ trendingVideos },
       // { headers: response.headers }
@@ -31,42 +36,99 @@ export async function loader({ request }: LoaderArgs) {
   }
 };
 
-// const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
-// type Literal = z.infer<typeof literalSchema>;
-// type Json = Literal | { [key: string]: Json } | Json[];
-
-// const jsonSchema: z.ZodType<Json> = z.lazy(() =>
-//   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])
-// );
-
-const stringToJSONSchema = z.string()
-  .transform((str, ctx) => {
-    try {
-      return JSON.parse(str)
-    } catch (e) {
-      console.log(str);
-      ctx.addIssue({ code: 'custom', message: 'Invalid JSON' })
-      return z.NEVER
-    }
-  })
-
 
 export async function action({ request, params }: ActionArgs) {
-  return json({})
+  const { videoId } = await request.json();
+  try {
+    console.log('Fetching video data')
+    const response = await fetch(`https://iv.melmac.space/api/v1/videos/${videoId}`);
+    const video = await response.json();
+    console.log('got video');
+    return json({ video });
+  } catch (error) {
+    console.error('Error fetching video:', error);
+    return json({});
+  }
 
   //   return redirect(`/video/${videoId}`, { headers: response.headers });
 }
 
 export default function IndexPage() {
   const { trendingVideos } = useLoaderData();
+  const actionData = useActionData();
   const [thumbnails, setThumbnails] = useState<any[]>([]);
+  const [playingVideoData, setPlayingVideoData] = useState<{ [key: string]: any } | null>();
+
+  const [playerState, setPlayerState] = useState({
+    playing: false,
+    played: 0,
+    playedSeconds: 0,
+    loaded: 0,
+    loadedSeconds: 0,
+    buffering: false
+  })
+
+  const submit = useSubmit();
+
+  useEffect(() => {
+    const { video } = actionData || {};
+    setPlayingVideoData(video);
+    setPlayerState({
+      playing: video ? true : false,
+      played: 0,
+      playedSeconds: 0,
+      loaded: 0,
+      loadedSeconds: 0,
+      buffering: false
+    })
+  }, [actionData])
+
+
   useEffect(() => {
     const thumbnails = trendingVideos.map((video: any) => {
       const thumbnail = video.videoThumbnails.find((x: any) => x.quality == 'maxresdefault');
-      return <VideoThumbnail author={video.author} title={video.title} url={thumbnail.url} />
+      return <VideoThumbnail
+        key={video.videoId}
+        onThumbnailClick={onThumbnailClick}
+        author={video.author} title={video.title} url={thumbnail.url} videoId={video.videoId}
+      />
     })
     setThumbnails(thumbnails)
   }, [trendingVideos])
+
+  const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any) => {
+    console.log('clicked', videoId);
+    // if (video.videoId == playingVideoData.videoId) {
+    //   return;
+    // }
+
+    setPlayingVideoData({
+      videoThumbnails: [{
+        url: thumbnailUrl
+      }],
+      title,
+      author
+    })
+
+    setPlayerState(p => ({
+      ...p,
+      buffering: true
+    }))
+
+    submit(
+      { videoId: videoId },
+      { method: "post", encType: "application/json" }
+    );
+    // try {
+    //   const response = await fetch(`http://iv.melmac.space/api/v1/videos/${videoId}`);
+    //   const video = await response.json();
+    //   console.log('video', video)
+    // } catch (error) {
+    //   console.error('Error fetching trending videos:', error);
+    // }
+  }
+
+
   // const actionData = useActionData();
 
   // const [timer, setTimer] = useState<any>()
@@ -100,10 +162,16 @@ export default function IndexPage() {
   //   // setFetchingNews(false);
   // }, [fetcher.data]);
 
+  useEffect(() => {
+    console.log('playerState', playerState)
+  }, [playerState])
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <div className="flex-grow flex mt-2 h-0">
+      {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(video)}</p> */}
+      {/* <p className="bg-green-400 px-4 py-2">{JSON.stringify(playingVideoData)}</p> */}
+
+      <div className="flex-grow flex mt-2 h-0 mx-2">
         <ResizableBox
           className="flex"
           width={500}
@@ -129,10 +197,6 @@ export default function IndexPage() {
           </div>
         </ResizableBox>
 
-        {/* <div className="bg-neutral-900 overflow-y-auto rounded-lg resize-x">
-          <p>One</p>
-        </div> */}
-
         {/* Container two */}
 
         <div className="
@@ -143,7 +207,52 @@ export default function IndexPage() {
         overflow-x-hidden
         w-full
         ">
-
+          <Player
+            onReady={() => {
+              setPlayerState(p => ({
+                ...p,
+                playing: true,
+                played: 0,
+                playedSeconds: 0,
+                loaded: 0,
+                loadedSeconds: 0
+              }))
+            }}
+            playing={playerState.playing}
+            onProgress={({ played, playedSeconds, loaded, loadedSeconds }: any) => setPlayerState(p => ({
+              ...p,
+              played,
+              playedSeconds,
+              loaded,
+              loadedSeconds
+            }))}
+            onPause={() => setPlayerState(p => ({
+              ...p,
+              playing: false
+            }))}
+            onEnded={() => setPlayerState(p => ({
+              ...p,
+              playing: false,
+              played: 0,
+              playedSeconds: 0,
+              loaded: 0,
+              loadedSeconds: 0
+            }))}
+            onBuffer={() => {
+              console.log('Start buffering')
+              setPlayerState(p => ({
+                ...p,
+                buffering: true
+              }))
+            }}
+            onBufferEnd={() => {
+              console.log('Done buffering')
+              setPlayerState(p => ({
+                ...p,
+                buffering: false
+              }))
+            }}
+            url={playingVideoData?.adaptiveFormats?.at(0)?.url} />
 
           <p className="text-white font-bold text-3xl">Good morning</p>
           <p className="text-white font-bold text-2xl py-8">Trending</p>
@@ -173,10 +282,24 @@ export default function IndexPage() {
 
       <div className="flex-none bg-black h-20 grid grid-cols-5 px-4">
         <div className="col-span-1 flex space-x-4 items-center">
-          <CImage className="w-12 h-12 object-cover rounded-lg" src='https://iv.melmac.space/vi/Fqey8LxQxFU/maxresdefault.jpg' />
+          <CImage
+            className="w-24 aspect-video object-cover rounded-lg"
+            src={playingVideoData?.videoThumbnails?.at(0)?.url}
+            brokenImageCallback={() => {
+              console.log('debug broken image')
+            }}
+          />
           <div>
-            <p className="text-sm text-white font-semibold line-clamp-1">An Thần</p>
-            <p className="text-xs text-neutral-400 line-clamp-1">Low G, Thắng</p>
+            <p className="text-sm text-white font-semibold line-clamp-1">{
+              playingVideoData?.musicTracks?.at(0).song ||
+              playingVideoData?.title ||
+              'No Title Playing'
+            }</p>
+            <p className="text-xs text-neutral-400 line-clamp-1">{
+              playingVideoData?.musicTracks?.at(0).artist ||
+              playingVideoData?.author ||
+              'Author'
+            }</p>
           </div>
 
         </div>
@@ -186,16 +309,37 @@ export default function IndexPage() {
             <div className="flex justify-center">
               <div className="flex items-center space-x-2">
                 <BackwardIcon className="w-6 h-6 text-neutral-400" />
-                <PauseCircleIcon className="w-10 h-10 text-white" />
+
+                <button
+                  className={` ${playingVideoData ? 'hover:scale-105' : 'opacity-70'}`}
+                  onClick={() => {
+                    if (playingVideoData == undefined) return;
+                    setPlayerState((p) => ({ ...p, playing: !p.playing }));
+                  }}>
+                  {
+                    playerState.playing ?
+                      <PauseCircleIcon className="w-10 h-10 text-white" /> :
+                      <PlayCircleIcon className="w-10 h-10 text-white" />
+                  }
+                </button>
+
                 <ForwardIcon className="w-6 h-6 text-neutral-400" />
               </div>
             </div>
 
 
             <div className="w-2/3 space-x-2 mx-auto flex items-center">
-              <p className="text-xs text-neutral-400">1:34</p>
-              <div className="h-1 bg-white w-full rounded-full" />
-              <p className="text-xs text-neutral-400" >3:21</p>
+              <p className="text-xs text-neutral-400 w-10 text-center">{
+                new Date(playerState.playedSeconds * 1000).toISOString().substring(14, 19)
+              }</p>
+
+              <div className={`w-full rounded-full h-1 ${playerState.buffering ? 'bg-neutral-600 animate-pulse' : 'bg-neutral-500'}`}>
+                <div className='bg-white h-1 rounded-full text-center' style={{
+                  width: `${Math.round(playerState.played * 100)}%`
+                }}
+                />
+              </div>
+              <p className="text-xs text-neutral-400 w-10" >03:21</p>
             </div>
           </div>
         </div>

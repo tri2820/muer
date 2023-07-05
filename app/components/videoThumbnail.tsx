@@ -2,12 +2,21 @@ import { PlayIcon } from "@heroicons/react/20/solid";
 import CImage from "./cimage";
 
 
-function VideoThumbnail({ url, title, author }: any) {
-    return <div key={url}
+function VideoThumbnail({ url, title, author, videoId, onThumbnailClick }: any) {
+    return <div
         className="w-full p-4 bg-white/5 hover:bg-white/10 rounded transition-all duration-150
       cursor-pointer
       group
-      ">
+      "
+        onClick={() => {
+            onThumbnailClick({
+                videoId,
+                thumbnailUrl: url,
+                title,
+                author
+            })
+        }}
+    >
         <div className="relative">
             <CImage
                 className="object-cover aspect-video w-full rounded"
@@ -34,7 +43,7 @@ function VideoThumbnail({ url, title, author }: any) {
         </div>
 
         <div className="pt-4 pb-2">
-            <p className="text-sm font-semibold text-white line-clamp-1">{title}</p>
+            <p className="text-sm font-semibold text-white line-clamp-2">{title}</p>
         </div>
 
         <p className="text-xs text-neutral-400 line-clamp-1">{

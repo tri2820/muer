@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 export const CImage = ({ src, className, brokenImageCallback, displayPlaceholder, widthLargerThan = 0, heightLargerThan = 0 }: any) => {
     const [isLoaded, setIsLoaded] = useState(false);
-
+    // console.log('load image', src)
     useEffect(() => {
+        if (!src) return;
         const image = new Image();
         image.src = src;
         image.onload = () => {
@@ -15,6 +16,7 @@ export const CImage = ({ src, className, brokenImageCallback, displayPlaceholder
             setIsLoaded(true);
         };
         image.onerror = () => {
+            console.log('debug error');
             brokenImageCallback?.(src)
         }
     }, [src]);
