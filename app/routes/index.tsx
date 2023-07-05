@@ -8,11 +8,14 @@ import { useSupabase } from "~/models/user.server";
 import { fromNow } from "~/utils";
 
 import { Resizable, ResizableBox } from 'react-resizable';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import VideoThumbnail from "~/components/videoThumbnail";
+import { Range, getTrackBackground } from 'react-range';
+
 
 
 import Player from "~/components/Player";
+import ReactPlayer from "react-player";
 
 
 
@@ -65,7 +68,9 @@ export default function IndexPage() {
     playedSeconds: 0,
     loaded: 0,
     loadedSeconds: 0,
-    buffering: false
+    buffering: false,
+    duration: undefined as (number | undefined),
+    progressValues: [0]
   })
 
   const submit = useSubmit();
@@ -79,7 +84,9 @@ export default function IndexPage() {
       playedSeconds: 0,
       loaded: 0,
       loadedSeconds: 0,
-      buffering: false
+      buffering: false,
+      duration: undefined,
+      progressValues: [0]
     })
   }, [actionData])
 
@@ -111,8 +118,14 @@ export default function IndexPage() {
     })
 
     setPlayerState(p => ({
-      ...p,
-      buffering: true
+      playing: true,
+      played: 0,
+      playedSeconds: 0,
+      loaded: 0,
+      loadedSeconds: 0,
+      buffering: true,
+      duration: undefined,
+      progressValues: [0]
     }))
 
     submit(
@@ -166,6 +179,8 @@ export default function IndexPage() {
     console.log('playerState', playerState)
   }, [playerState])
 
+  const playerRef = useRef<ReactPlayer | null>(null);
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
       {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(video)}</p> */}
@@ -208,6 +223,7 @@ export default function IndexPage() {
         w-full
         ">
           <Player
+            playerRef={playerRef}
             onReady={() => {
               setPlayerState(p => ({
                 ...p,
@@ -219,13 +235,18 @@ export default function IndexPage() {
               }))
             }}
             playing={playerState.playing}
-            onProgress={({ played, playedSeconds, loaded, loadedSeconds }: any) => setPlayerState(p => ({
-              ...p,
-              played,
-              playedSeconds,
-              loaded,
-              loadedSeconds
-            }))}
+            onProgress={({ played, playedSeconds, loaded, loadedSeconds }: any) => {
+              setPlayerState(p => ({
+                ...p,
+                played,
+                playedSeconds,
+                loaded,
+                loadedSeconds,
+                progressValues: [played]
+              }))
+
+
+            }}
             onPause={() => setPlayerState(p => ({
               ...p,
               playing: false
@@ -252,7 +273,15 @@ export default function IndexPage() {
                 buffering: false
               }))
             }}
-            url={playingVideoData?.adaptiveFormats?.at(0)?.url} />
+            onDuration={(duration: number) => {
+              console.log('debug duration', duration)
+              setPlayerState(p => ({
+                ...p,
+                duration
+              }))
+            }}
+            url={playingVideoData?.adaptiveFormats?.at(0)?.url}
+          />
 
           <p className="text-white font-bold text-3xl">Good morning</p>
           <p className="text-white font-bold text-2xl py-8">Trending</p>
@@ -307,7 +336,7 @@ export default function IndexPage() {
         <div className="col-span-3 flex items-center ">
           <div className="space-y-1 w-full ">
             <div className="flex justify-center">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <BackwardIcon className="w-6 h-6 text-neutral-400" />
 
                 <button
@@ -328,18 +357,74 @@ export default function IndexPage() {
             </div>
 
 
-            <div className="w-2/3 space-x-2 mx-auto flex items-center">
+            <div className="w-1/2 space-x-2 mx-auto flex items-center">
               <p className="text-xs text-neutral-400 w-10 text-center">{
                 new Date(playerState.playedSeconds * 1000).toISOString().substring(14, 19)
               }</p>
 
-              <div className={`w-full rounded-full h-1 ${playerState.buffering ? 'bg-neutral-600 animate-pulse' : 'bg-neutral-500'}`}>
-                <div className='bg-white h-1 rounded-full text-center' style={{
-                  width: `${Math.round(playerState.played * 100)}%`
+              <Range
+                step={0.001}
+                min={0}
+                max={1}
+                values={playerState.progressValues}
+                onChange={(values: any) => {
+                  setPlayerState((p) => ({
+                    ...p,
+                    progressValues: values
+                  }))
+
                 }}
-                />
-              </div>
-              <p className="text-xs text-neutral-400 w-10" >03:21</p>
+                onFinalChange={(values: any) => {
+                  setPlayerState((p) => ({
+                    ...p,
+                    progressValues: values
+                  }))
+                  playerRef?.current?.seekTo(values[0])
+                }}
+                renderTrack={({ props, children }) => (
+                  <div
+                    onMouseDown={props.onMouseDown}
+                    onTouchStart={props.onTouchStart}
+                    className='w-full py-1 group flex '
+                    style={props.style}
+                  >
+                    <div
+                      className={`w-full h-1 rounded-full overflow-hidden bg-white group-hover:bg-green-500 ${playerState.buffering ? 'animate-pulse' : ''}`}>
+                      <div ref={props.ref}
+                        style={{
+                          background: getTrackBackground({
+                            values: playerState.progressValues,
+                            colors: [
+                              "transparent",
+                              playerState.buffering ? "#737373" : '#525252'],
+                            min: 0,
+                            max: 1
+                          })
+                        }}
+                        className="w-full h-1">
+                        {children}
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+                renderThumb={({ props, isDragged }) => (
+                  <div
+                    className='invisible group-hover:visible focus:outline-none h-3 w-3 rounded-full shadow bg-white'
+                    {...props}
+                    style={{
+                      ...props.style,
+                      ...(isDragged && { visibility: 'visible' })
+                    }}
+                  />
+                )}
+              />
+              <p className="text-xs text-neutral-400 w-10" >{
+                playerState.duration ?
+                  new Date(playerState.duration * 1000).toISOString().substring(14, 19) :
+                  '--:--'
+              }</p>
+
             </div>
           </div>
         </div>
