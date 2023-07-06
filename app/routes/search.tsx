@@ -1,5 +1,5 @@
 import { ActionArgs, MetaFunction, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useOutletContext, Outlet } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useOutletContext, Outlet, useFetcher } from "@remix-run/react";
 import { zx } from "zodix";
 import { z } from "zod";
 import { json } from "react-router";
@@ -28,10 +28,12 @@ export async function action({ request, params }: ActionArgs) {
     }
     const url = `/search/${validate_results.data.q}`;
     return redirect(url);
+    // return json({})
 }
 
 export default function SearchPage() {
     const context = useOutletContext<any>();
+    // const fetcher = useFetcher()
 
     return <div className="px-6 py-8">
         <Form method="post">
@@ -49,8 +51,6 @@ export default function SearchPage() {
                 placeholder="Search"
             />
         </Form>
-
-
 
         <Outlet context={context} />
 

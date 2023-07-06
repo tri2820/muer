@@ -55,31 +55,16 @@ export async function loader({ request }: LoaderArgs) {
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
     COMMIT_REF: process.env.COMMIT_REF!
   }
-
+  console.log('debug root loader')
   return json({
     user: await getUser(request),
     env
   });
 };
 
-export async function action({ request, params }: ActionArgs) {
-  const { videoId } = await request.json();
 
-  // TODO: Cache response from other servers
-  try {
-    console.log('Fetching video data')
-    const response = await randomFetch(`api/v1/videos/${videoId}`);
-    const video = await response.json();
-    console.log('got video');
 
-    return json({ video })
-  } catch (error) {
-    console.error('Error fetching video:', error);
-    return json({});
-  }
-
-  //   return redirect(`/video/${videoId}`, { headers: response.headers });
-}
+// export const shouldRevalidate = () => false;
 
 
 export default function App() {
@@ -93,6 +78,17 @@ export default function App() {
   useEffect(() => {
     console.log('debug fetcher.data', fetcher.data)
     const { video } = fetcher.data || {};
+
+    if (!video) {
+      console.log('Fetched empty data')
+      return
+    }
+
+    if (video.videoId == playingVideoData?.videoId) {
+      console.log('Same video is playing')
+      return;
+    }
+
     setPlayingVideoData((v: any) => {
       if (!v) return video
       return {
@@ -114,7 +110,9 @@ export default function App() {
     })
   }, [fetcher.data])
 
-
+  useEffect(() => {
+    console.log('debug root re-render')
+  }, [])
   const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any) => {
     console.log('clicked', videoId);
     if (videoId == playingVideoData?.videoId) {
@@ -141,10 +139,14 @@ export default function App() {
       error: false
     })
 
-    fetcher.submit(
-      { videoId: videoId },
-      { method: "post", encType: "application/json" }
-    );
+    // fetcher.submit(
+    //   { videoId: videoId },
+    //   { method: "post",  }
+    // );
+    // if (fetcher.state === "idle" && fetcher.data == null) {
+    fetcher.load(`/video/${videoId}`);
+    // }
+
   }
 
   const [playerState, setPlayerState] = useState({
