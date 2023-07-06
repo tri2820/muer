@@ -1,31 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import fallbackImage from '../../public/fallbackImage.jpg'
+
 
 export const CImage = ({ src, className, brokenImageCallback, displayPlaceholder, widthLargerThan = 0, heightLargerThan = 0 }: any) => {
-    const [isLoaded, setIsLoaded] = useState(false);
-    // console.log('load image', src)
+    const [errorLoadingImage, setErrorLoadingImage] = useState(false);
     useEffect(() => {
-        if (!src) return;
-        const image = new Image();
-        image.src = src;
-        image.onload = () => {
-            if (image.naturalWidth <= widthLargerThan || image.naturalHeight <= heightLargerThan) {
-                console.log(`image ${src} does not meet standard`)
-                brokenImageCallback?.(src)
-                return;
-            }
-            setIsLoaded(true);
-        };
-        image.onerror = () => {
-            console.log('debug error');
-            brokenImageCallback?.(src)
-        }
+        setErrorLoadingImage(false)
     }, [src]);
+    const ref = useRef<any>();
 
+    if (errorLoadingImage) return <img src={fallbackImage} className={className} />
     const placeholder = displayPlaceholder ? <div className={className} /> : <></>;
     if (!src) return placeholder;
-    if (!isLoaded) return placeholder;
 
-    return <img src={src} alt="Preloaded Image" className={className} />
+    return <img ref={ref} src={src} className={className}
+        onError={() => {
+            console.log('Cannot load image');
+            brokenImageCallback?.(src);
+            setErrorLoadingImage(true);
+        }}
+        onLoad={() => {
+            console.log(
+                'ref?.current?.naturalWidth',
+                ref?.current?.naturalWidth)
+
+            console.log(
+                'ref?.current?.naturalHeight',
+                ref?.current?.naturalHeight)
+
+            if (ref?.current?.naturalWidth <= widthLargerThan || ref?.current?.naturalHeight <= heightLargerThan) {
+                console.log(`image ${src} does not meet standard`)
+                brokenImageCallback?.(src);
+                setErrorLoadingImage(true);
+                return;
+            }
+        }} />
 };
 
 export default CImage;

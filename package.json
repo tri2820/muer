@@ -35,6 +35,7 @@
     "@remix-run/node": "^1.6.8",
     "@remix-run/react": "^1.6.8",
     "@supabase/auth-helpers-remix": "^0.2.1",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@testing-library/cypress": "^8.0.3",
     "async-mutex": "^0.4.0",

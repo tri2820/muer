@@ -133,3 +133,25 @@ export function isJsonString(str: string) {
 export function capitalize(s: string) {
   return  s[0].toUpperCase() + s.substring(1); 
 }
+
+export const SERVERS = [
+  'https://vid.priv.au',
+  'https://iv.melmac.space',
+  // 'https://inv.tux.pizza',
+  // 'https://inv.in.projectsegfau.lt',
+  'https://inv.makerlab.tech',
+  'https://invidious.slipfox.xyz',
+  'https://inv.pistasjis.net',
+  'https://par1.iv.ggtyler.dev',
+  'https://iv.melmac.space',
+  // 'https://invidious.lunar.icu',
+  'https://yt.oelrichsgarcia.de',
+  // 'https://inv.zzls.xyz'
+]
+
+export const randomFetch = (input: string) => {
+  const randomServer = SERVERS[Math.floor(Math.random() * SERVERS.length)];
+  const inp = `${randomServer}/${input}`
+  console.log('debug randomFetch', inp)
+  return fetch(inp)
+}

@@ -9,8 +9,8 @@ export default function Player({
     const url = urls.find((x: string) => !failedUrls.some(y => y == x))
 
     useEffect(() => {
-        const url = urls.find((x: string) => !failedUrls.some(y => y == x))
-        if (!url) {
+        const numGoodUrls = urls.filter((x: string) => !failedUrls.some(y => y == x)).length
+        if (numGoodUrls == 0) {
             onVideoError()
         }
     }, [failedUrls])
