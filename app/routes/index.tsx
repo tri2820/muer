@@ -1,7 +1,8 @@
-import { EllipsisVerticalIcon, PauseCircleIcon, BackwardIcon, ForwardIcon, RectangleGroupIcon, RectangleStackIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
+import { EllipsisVerticalIcon, PauseCircleIcon, BackwardIcon, ForwardIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, MagnifyingGlassIcon, RectangleStackIcon } from "@heroicons/react/20/solid";
 import { Bars3BottomRightIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
-import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { NavLink, useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { z } from "zod";
 import CImage from "~/components/cimage";
 import { useSupabase } from "~/models/user.server";
@@ -59,18 +60,17 @@ export async function loader({ request }: LoaderArgs) {
   }
 };
 
-
 export async function action({ request, params }: ActionArgs) {
   const { videoId } = await request.json();
 
-  // Cache response
-
+  // TODO: Cache response from other servers
   try {
     console.log('Fetching video data')
     const response = await randomFetch(`api/v1/videos/${videoId}`);
     const video = await response.json();
     console.log('got video');
-    return json({ video });
+
+    return json({ video })
   } catch (error) {
     console.error('Error fetching video:', error);
     return json({});
@@ -216,7 +216,7 @@ export default function IndexPage() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(video)}</p> */}
+      {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(actionData?.video)}</p> */}
       {/* <p className="bg-green-400 px-4 py-2">{JSON.stringify(playingVideoData)}</p> */}
       {
         playerState.error &&
@@ -236,15 +236,38 @@ export default function IndexPage() {
           resizeHandles={['e']}
           axis="x"
         >
-          <div className="bg-neutral-900 
+          <div className="
           overflow-y-hidden hover:overflow-y-auto scrollbar scrollbar-thumb-white/40 hover:scrollbar-thumb-white/60 scrollbar-track-transparent
-          rounded-lg
           flex-grow
-          px-4 py-3
+          flex
+          flex-col
+          space-y-2
           ">
-            <div className="flex items-center text-neutral-400 space-x-2">
-              <RectangleStackIcon className="w-6 h-6" />
-              <span className="font-semibold">Your Library</span>
+
+            <div className="bg-neutral-900 rounded-lg px-6 py-4 flex-none space-y-6">
+              <NavLink to='/' className={({ isActive, isPending }) =>
+                `${isActive ? 'text-white' : 'text-neutral-400'} flex items-center  space-x-4`
+              }>
+                <HomeIcon className="w-6 h-6" />
+                <span className="font-semibold">Home</span>
+
+              </NavLink>
+
+              <NavLink to='/search' className={({ isActive, isPending }) =>
+                `${isActive ? 'text-white' : 'text-neutral-400'} flex items-center  space-x-4`
+              }>
+
+                <MagnifyingGlassIcon className="w-6 h-6" />
+                <span className="font-semibold">Search</span>
+
+              </NavLink>
+            </div>
+
+            <div className="bg-neutral-900 rounded-lg px-6 py-4 flex-1">
+              <div className="flex items-center text-neutral-400 space-x-4">
+                <RectangleStackIcon className="w-6 h-6" />
+                <span className="font-semibold">Your Library</span>
+              </div>
             </div>
           </div>
         </ResizableBox>
@@ -253,103 +276,109 @@ export default function IndexPage() {
 
         <div className="
         bg-neutral-900 
-        rounded-lg bg-gradient-to-b from-violet-950/80 from-10% via-neutral-900
-        p-4
+        
         overflow-y-auto scrollbar scrollbar-thumb-white/40 hover:scrollbar-thumb-white/60 scrollbar-track-transparent
         overflow-x-hidden
         w-full
         ">
-          <Player
-            playerRef={playerRef}
-            onVideoError={() => {
-              setPlayerState(p => ({
+          <div className="px-6 py-8 bg-gradient-to-b from-violet-950/60 bg-no-repeat bg-[length:auto_50vh] rounded-lg ">
+            <Player
+              playerRef={playerRef}
+              onVideoError={() => {
+                setPlayerState(p => ({
+                  ...p,
+                  playing: true,
+                  played: 0,
+                  playedSeconds: 0,
+                  loaded: 0,
+                  loadedSeconds: 0,
+                  error: true
+                }))
+              }}
+              onReady={() => {
+                setPlayerState(p => ({
+                  ...p,
+                  playing: true,
+                  played: 0,
+                  playedSeconds: 0,
+                  loaded: 0,
+                  loadedSeconds: 0
+                }))
+              }}
+              playing={playerState.playing}
+              onProgress={({ played, playedSeconds, loaded, loadedSeconds }: any) => {
+                setPlayerState(p => ({
+                  ...p,
+                  played,
+                  playedSeconds,
+                  loaded,
+                  loadedSeconds,
+                  progressValues: [played]
+                }))
+
+
+              }}
+              onPause={() => setPlayerState(p => ({
                 ...p,
-                playing: true,
-                played: 0,
-                playedSeconds: 0,
-                loaded: 0,
-                loadedSeconds: 0,
-                error: true
-              }))
-            }}
-            onReady={() => {
-              setPlayerState(p => ({
+                playing: false
+              }))}
+              onEnded={() => setPlayerState(p => ({
                 ...p,
-                playing: true,
+                playing: false,
                 played: 0,
                 playedSeconds: 0,
                 loaded: 0,
                 loadedSeconds: 0
-              }))
-            }}
-            playing={playerState.playing}
-            onProgress={({ played, playedSeconds, loaded, loadedSeconds }: any) => {
-              setPlayerState(p => ({
-                ...p,
-                played,
-                playedSeconds,
-                loaded,
-                loadedSeconds,
-                progressValues: [played]
-              }))
-
-
-            }}
-            onPause={() => setPlayerState(p => ({
-              ...p,
-              playing: false
-            }))}
-            onEnded={() => setPlayerState(p => ({
-              ...p,
-              playing: false,
-              played: 0,
-              playedSeconds: 0,
-              loaded: 0,
-              loadedSeconds: 0
-            }))}
-            onBuffer={() => {
-              console.log('Start buffering')
-              setPlayerState(p => ({
-                ...p,
-                buffering: true
-              }))
-            }}
-            onBufferEnd={() => {
-              console.log('Done buffering')
-              setPlayerState(p => ({
-                ...p,
-                buffering: false
-              }))
-            }}
-            onDuration={(duration: number) => {
-              console.log('debug duration', duration)
-              setPlayerState(p => ({
-                ...p,
-                duration
-              }))
-            }}
-            // Or formatStreams
-            // Try only one url
-            urls={playingVideoData?.adaptiveFormats?.slice(0, 1).map((x: any) => x.url)}
-          />
-
-          <p className="text-white font-bold text-3xl">Good morning</p>
-          <p className="text-white font-bold text-2xl py-8">Trending</p>
-
-          {
-            <div className="grid grid-cols-5 gap-6">
-              {
-                thumbnails
+              }))}
+              onBuffer={() => {
+                console.log('Start buffering')
+                setPlayerState(p => ({
+                  ...p,
+                  buffering: true
+                }))
+              }}
+              onBufferEnd={() => {
+                console.log('Done buffering')
+                setPlayerState(p => ({
+                  ...p,
+                  buffering: false
+                }))
+              }}
+              onDuration={(duration: number) => {
+                console.log('debug duration', duration)
+                setPlayerState(p => ({
+                  ...p,
+                  duration
+                }))
+              }}
+              // Or formatStreams
+              // Try only one url
+              // Fallback to youtube embed
+              urls={
+                [playingVideoData?.adaptiveFormats?.at(0)?.url,
+                `https://www.youtube.com/watch?v=${playingVideoData?.videoId}`
+                ]
               }
+            />
+
+            <p className="text-white font-bold text-3xl tracking-tight">Good morning</p>
+            <p className="text-white font-bold text-2xl tracking-tight py-6">Trending</p>
+
+            {
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {
+                  thumbnails
+                }
+              </div>
+            }
+
+
+            <div className="py-16">
+              <p className="text-sm text-white font-semibold py-2">Organization</p>
+              <p className="text-sm text-neutral-400 py-2">Rider is a modern, open source front-end to both decentralized and centralized music. Powered by Invidious.</p>
             </div>
-          }
 
-
-          <div className="py-16">
-            <p className="text-sm text-white font-semibold py-2">Organization</p>
-            <p className="text-sm text-neutral-400 py-2">Rider is a modern, open source front-end to both decentralized and centralized music. Powered by Invidious.</p>
           </div>
-
         </div>
 
 

@@ -46,7 +46,7 @@ function VideoThumbnail({ url, title, author, videoId, onThumbnailClick }: any) 
             <p className="text-sm font-semibold text-white line-clamp-2">{title}</p>
         </div>
 
-        <p className="text-xs text-neutral-400 line-clamp-1">{
+        <p className="text-sm text-neutral-400 line-clamp-1">{
             author
         }</p>
 

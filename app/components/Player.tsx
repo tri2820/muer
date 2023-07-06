@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import ReactPlayer from "react-player"
 
+// Youtube embed fallback
 export default function Player({
     playerRef, urls = [], playing, onStart, onBuffer, onBufferEnd, onReady, onProgress, onPause, onEnded, onDuration, onVideoError }: any) {
     const [failedUrls, setFailedUrls] = useState<string[]>([])
