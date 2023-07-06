@@ -42,7 +42,7 @@ import VideoThumbnail from "./components/videoThumbnail";
 import { randomFetch } from "./utils";
 
 export const meta: MetaFunction = () => {
-  return { title: "Rider" };
+  return { title: "Chomper" };
 };
 
 export const links: LinksFunction = () => {
@@ -228,12 +228,12 @@ export default function App() {
               </div>
             </ResizableBox>
             <div className="
-    bg-neutral-900 
-    
-    overflow-y-auto scrollbar scrollbar-thumb-white/40 hover:scrollbar-thumb-white/60 scrollbar-track-transparent
-    overflow-x-hidden
-    w-full
-    ">
+          bg-neutral-900 
+            overflow-y-auto scrollbar scrollbar-thumb-white/40 hover:scrollbar-thumb-white/60 scrollbar-track-transparent
+            overflow-x-hidden
+            w-full
+            rounded-lg
+            ">
 
 
               <Outlet context={{ supabase, env, onThumbnailClick }} />
@@ -250,7 +250,7 @@ export default function App() {
           <div className="flex-none bg-black h-20 grid grid-cols-5 px-4">
             <div className="col-span-1 flex space-x-4 items-center">
               <CImage
-                className="w-14 aspect-square object-cover rounded-lg "
+                className="w-24 aspect-video object-cover rounded-lg "
                 src={playingVideoData?.videoThumbnails?.at(0)?.url}
                 brokenImageCallback={() => {
                   console.log('debug broken image')
@@ -459,7 +459,7 @@ export default function App() {
 
 
         <ScrollRestoration />
-        <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="rider.tri" />
+        <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="chomper.tri" />
         <Scripts />
         <LiveReload />
       </body>

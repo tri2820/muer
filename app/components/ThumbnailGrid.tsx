@@ -13,7 +13,7 @@ export default function ThumbnailGrid({ videos, onThumbnailClick }: any) {
     })
 
     return <div className="@container">
-        <div className="grid grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 @xl:grid-cols-4 @3xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 @lg:grid-cols-2 @xl:grid-cols-3 @3xl:grid-cols-4 gap-6">
             {
                 thumbnails
             }

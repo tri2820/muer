@@ -37,6 +37,7 @@ export default function SearchIndexPage() {
     const loaderData = useLoaderData();
     const { onThumbnailClick } = useOutletContext<any>()
     const videos = loaderData?.results?.filter((x: any) => x.type == 'video')
+    // const musicVideos = videos.filter()
 
     return <div>
         <p className="text-white font-bold text-2xl tracking-tight py-6">Songs</p>

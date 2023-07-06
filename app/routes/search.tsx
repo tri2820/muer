@@ -1,4 +1,4 @@
-import { ActionArgs, redirect } from "@remix-run/node";
+import { ActionArgs, MetaFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useOutletContext, Outlet } from "@remix-run/react";
 import { zx } from "zodix";
 import { z } from "zod";
@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 import VideoThumbnail from "~/components/videoThumbnail";
 
 
+export const meta: MetaFunction = () => {
+    return { title: "Chomper - Search" };
+};
 
 export async function action({ request, params }: ActionArgs) {
     const validate_results = await zx.parseFormSafe(request, {
@@ -30,7 +33,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function SearchPage() {
     const context = useOutletContext<any>();
 
-    return <div className="px-6 py-8 rounded-lg ">
+    return <div className="px-6 py-8">
         <Form method="post">
 
             <input type="text" name="q" className="

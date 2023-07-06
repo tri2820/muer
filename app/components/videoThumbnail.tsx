@@ -19,7 +19,7 @@ function VideoThumbnail({ url, title, author, videoId, onThumbnailClick }: any) 
     >
         <div className="relative">
             <CImage
-                className="object-cover aspect-square w-full rounded"
+                className="object-cover aspect-video w-full rounded"
                 src={url}
                 widthLargerThan={960}
                 heightLargerThan={640}
