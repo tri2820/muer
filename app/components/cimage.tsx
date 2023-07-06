@@ -17,8 +17,8 @@ export const CImage = ({ src, className, brokenImageCallback, displayPlaceholder
     if (!src) return placeholder;
 
     return <img ref={ref} src={src} className={
-        // className
-        `${className} ${loaded ? '' : 'opacity-0'}`
+        className
+        // `${className} ${loaded ? '' : 'opacity-0'}`
     }
         onError={() => {
             console.log('Cannot load image');
@@ -31,6 +31,7 @@ export const CImage = ({ src, className, brokenImageCallback, displayPlaceholder
                 console.log(`image ${src} does not meet standard`)
                 brokenImageCallback?.(src);
                 setErrorLoadingImage(true);
+                setLoaded(true)
                 return;
             }
 

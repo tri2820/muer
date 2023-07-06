@@ -254,9 +254,8 @@ export default function App() {
               <CImage
                 className="w-24 aspect-video object-cover rounded-lg "
                 src={playingVideoData?.videoThumbnails?.at(0)?.url}
-                brokenImageCallback={() => {
-                  console.log('debug broken image')
-                }}
+                widthLargerThan={960}
+                heightLargerThan={640}
               />
               <div>
                 <p className="text-sm text-white font-semibold line-clamp-1">{
