@@ -76,7 +76,10 @@ export default function App() {
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   )
   const [playingVideoData, setPlayingVideoData] = useState<{ [key: string]: any } | null>();
+  
   const fetcher = useFetcher();
+  // Walkround until https://github.com/remix-run/remix/discussions/2775 implemented
+  const [fetcherDataShouldUpdateState, setFetcherDataShouldUpdateState] = useState(false);
 
   useEffect(() => {
     console.log('debug fetcher.data', fetcher.data)
@@ -87,15 +90,13 @@ export default function App() {
       return
     }
 
-    if (video.videoId == playingVideoData?.videoId) {
-      console.log('Same video is playing')
-      if (playerState.playing == false) {
-        setPlayerState(p => ({
-          ...p,
-          playing: true,
-        }))
-      }
-      return;
+    if (!fetcherDataShouldUpdateState) {
+      console.log('Should not update state, fetcher.data could have called effect because user navigated')
+      return 
+    }
+
+    if (video.videoId != playingVideoData?.videoId) {
+      return
     }
 
     setPlayingVideoData((v: any) => {
@@ -107,7 +108,7 @@ export default function App() {
     });
 
     setPlayerState({
-      playing: video ? true : false,
+      playing: true,
       played: 0,
       playedSeconds: 0,
       loaded: 0,
@@ -117,14 +118,25 @@ export default function App() {
       progressValues: [0],
       error: false
     })
+
+    setFetcherDataShouldUpdateState(false)
   }, [fetcher.data])
 
   useEffect(() => {
     console.log('debug root re-render')
   }, [])
+
+  const onHeartClick = async ({ videoId, hearted }: any) => {
+    console.log('debug heart clicked', videoId, hearted)
+  }
+
   const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any) => {
     console.log('clicked', videoId);
     if (videoId == playingVideoData?.videoId) {
+      setPlayerState((p) => ({
+        ...p,
+        playing: true
+      }))
       return;
     }
 
@@ -133,7 +145,8 @@ export default function App() {
         url: thumbnailUrl
       }],
       title,
-      author
+      author,
+      videoId
     })
 
     setPlayerState({
@@ -154,6 +167,7 @@ export default function App() {
     // );
     // if (fetcher.state === "idle" && fetcher.data == null) {
     fetcher.load(`/video/${videoId}`);
+    setFetcherDataShouldUpdateState(true)
     // }
 
   }
@@ -284,7 +298,7 @@ export default function App() {
               {
                 playingVideoData &&
                 <div className="flex-none">
-                <HeartButton />
+                <HeartButton videoId={playingVideoData.videoId} onHeartClick={onHeartClick}/>
               </div>
               }
             </div>

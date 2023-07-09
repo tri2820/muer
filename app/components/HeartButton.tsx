@@ -3,7 +3,7 @@ import Lottie from "lottie-react";
 import heartAnimation from "../../public/heart.json";
 import { HeartIcon } from "@heroicons/react/24/outline";
 
-export default function HeartButton({ heartedStateCallback }: any) {
+export default function HeartButton({ videoId, onHeartClick }: any) {
     const [hearted, setHearted] = useState(false);
 
     return <div className="w-6 h-6 relative">
@@ -13,8 +13,11 @@ export default function HeartButton({ heartedStateCallback }: any) {
                 
                 }`}
             onClick={() => {
-                setHearted(!hearted);
-                heartedStateCallback?.(!hearted);
+                const h = !hearted;
+                setHearted(h);
+                onHeartClick?.({
+                    videoId, hearted: h
+                });
             }}
         />
 
