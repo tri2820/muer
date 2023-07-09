@@ -295,5 +295,5 @@ We use [Prettier](https://prettier.io/) for auto-formatting in this project. It'
 - Both centralized + federated content
 
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/github/docs)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/tri2820/rider)
 
