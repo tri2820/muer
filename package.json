@@ -45,6 +45,7 @@
     "fake-useragent": "^1.0.1",
     "fast-xml-parser": "^4.2.5",
     "google-news-json": "^2.1.0",
+    "lottie-react": "^2.4.0",
     "react": "^17.0.2",
     "react-aria-components": "^1.0.0-alpha.4",
     "react-dom": "^17.0.2",

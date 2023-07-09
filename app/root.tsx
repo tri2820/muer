@@ -1,5 +1,6 @@
 import { HomeIcon, MagnifyingGlassIcon, RectangleStackIcon } from "@heroicons/react/20/solid";
-import { Bars3BottomRightIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { Bars3BottomRightIcon, HeartIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as SolidHeartIcon } from "@heroicons/react/24/solid";
 import { BackwardIcon, EllipsisVerticalIcon, ForwardIcon, PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import type {
   ActionArgs,
@@ -29,6 +30,7 @@ import { ResizableBox } from 'react-resizable';
 
 
 
+
 import Player from "~/components/Player";
 
 
@@ -40,6 +42,7 @@ import tailwindStylesheetUrl from "./styles/tailwind.css";
 import ReactPlayer from "react-player";
 import VideoThumbnail from "./components/videoThumbnail";
 import { randomFetch } from "./utils";
+import HeartButton from "./components/HeartButton";
 
 export const meta: MetaFunction = () => {
   return { title: "Chomper" };
@@ -86,6 +89,12 @@ export default function App() {
 
     if (video.videoId == playingVideoData?.videoId) {
       console.log('Same video is playing')
+      if (playerState.playing == false) {
+        setPlayerState(p => ({
+          ...p,
+          playing: true,
+        }))
+      }
       return;
     }
 
@@ -148,6 +157,8 @@ export default function App() {
     // }
 
   }
+
+
 
   const [playerState, setPlayerState] = useState({
     playing: false,
@@ -252,12 +263,12 @@ export default function App() {
           <div className="flex-none bg-black h-20 grid grid-cols-5 px-4">
             <div className="col-span-1 flex space-x-4 items-center">
               <CImage
-                className="w-24 aspect-video object-cover rounded-lg "
+                className="w-24 aspect-video object-cover rounded-lg flex-none"
                 src={playingVideoData?.videoThumbnails?.at(0)?.url}
                 widthLargerThan={960}
                 heightLargerThan={640}
               />
-              <div>
+              <div className="flex-shrink">
                 <p className="text-sm text-white font-semibold line-clamp-1">{
                   playingVideoData?.musicTracks?.at(0).song ||
                   playingVideoData?.title ||
@@ -270,6 +281,9 @@ export default function App() {
                 }</p>
               </div>
 
+              <div className="flex-none">
+                <HeartButton />
+              </div>
             </div>
 
             <div className="col-span-3 flex items-center ">
@@ -420,7 +434,8 @@ export default function App() {
                 played: 0,
                 playedSeconds: 0,
                 loaded: 0,
-                loadedSeconds: 0
+                loadedSeconds: 0,
+                progressValues: [0]
               }))}
               onBuffer={() => {
                 console.log('Start buffering')
