@@ -281,9 +281,12 @@ export default function App() {
                 }</p>
               </div>
 
-              <div className="flex-none">
+              {
+                playingVideoData &&
+                <div className="flex-none">
                 <HeartButton />
               </div>
+              }
             </div>
 
             <div className="col-span-3 flex items-center ">
@@ -383,9 +386,9 @@ export default function App() {
             </div>
 
             <div className="col-span-1 flex items-center space-x-2">
-              <Bars3BottomRightIcon className="w-6 h-6 text-neutral-400" />
-              <SpeakerWaveIcon className="w-6 h-6 text-neutral-400" />
-              <div className="h-1 bg-white w-full rounded-full" />
+              <Bars3BottomRightIcon className="w-6 h-6 text-neutral-400 flex-none" />
+              <SpeakerWaveIcon className="w-6 h-6 text-neutral-400 flex-none" />
+              <div className="h-1 bg-white w-full rounded-full flex-shrink" />
             </div>
 
             <Player
