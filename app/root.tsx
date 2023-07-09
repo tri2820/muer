@@ -274,8 +274,8 @@ export default function App() {
         </div> */}
           </div>
 
-          <div className="flex-none bg-black h-20 grid grid-cols-5 px-4">
-            <div className="col-span-1 flex space-x-4 items-center">
+          <div className="flex-none bg-black h-20 grid grid-cols-11 px-4 space-x-4">
+            <div className="col-span-3 flex space-x-4 items-center">
               <CImage
                 className="w-24 aspect-video object-cover rounded-lg flex-none"
                 src={playingVideoData?.videoThumbnails?.at(0)?.url}
@@ -303,7 +303,7 @@ export default function App() {
               }
             </div>
 
-            <div className="col-span-3 flex items-center ">
+            <div className="col-span-5 flex items-center ">
               <div className="space-y-1 w-full ">
                 <div className="flex justify-center">
                   <div className="flex items-center space-x-3">
@@ -327,7 +327,7 @@ export default function App() {
                 </div>
 
 
-                <div className="w-1/2 space-x-2 mx-auto flex items-center">
+                <div className="space-x-2 mx-auto flex items-center ">
                   <p className="text-xs text-neutral-400 w-10 text-center">{
                     new Date(playerState.playedSeconds * 1000).toISOString().substring(14, 19)
                   }</p>
@@ -399,10 +399,10 @@ export default function App() {
               </div>
             </div>
 
-            <div className="col-span-1 flex items-center space-x-2">
+            <div className="col-span-3 flex items-center space-x-2 justify-end ">
               <Bars3BottomRightIcon className="w-6 h-6 text-neutral-400 flex-none" />
               <SpeakerWaveIcon className="w-6 h-6 text-neutral-400 flex-none" />
-              <div className="h-1 bg-white w-full rounded-full flex-shrink" />
+              <div className="h-1 bg-white w-1/2 rounded-full flex-shrink" />
             </div>
 
             <Player
