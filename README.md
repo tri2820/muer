@@ -293,3 +293,7 @@ We use [Prettier](https://prettier.io/) for auto-formatting in this project. It'
 
 - Nice UI to attract
 - Both centralized + federated content
+
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/github/docs)
+
