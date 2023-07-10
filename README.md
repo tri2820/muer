@@ -1,15 +1,14 @@
 # Rider Player
-Rider player is a modern, open source front-end for Youtube, based on Invidious.
-![Screenshot of Rider Player](public/screenshot.png)
-## Why? 
-
+Rider player is a modern, open source front-end for Youtube, based on Invidious. It has:
 - Better UI/UX
 - No ads
 - Better playlist management
 - Default fallback using Youtube embedded player
-- Federated (people host their own instance of Rider)
+- Federated design (people host their own instance of Rider)
 
-## Development
+![Screenshot of Rider Player](public/screenshot.png)
+
+# Development
 Want to code immediately? Click this button
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new/tri2820/rider?quickstart=1)
