@@ -45,10 +45,15 @@ export default function SearchPage() {
             border-white
             border-opacity-0
             focus:border-opacity-100
-            bg-white/10 hover:bg-white/20 shadow  text-white px-4 py-2 rounded-full
-            placeholder:text-neutral-400
+            bg-white/8 hover:bg-white/12 
+            hover:outline hover:outline-1 hover:outline-neutral-600
+            shadow shadow-neutral-900/50 text-white px-5 py-3.5 rounded-full
+            placeholder:text-neutral-500
+            text-xs
+            font-medium
+            w-80
             "
-                placeholder="Search"
+                placeholder="What do you want to listen to?"
             />
         </Form>
 

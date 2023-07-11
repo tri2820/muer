@@ -141,7 +141,7 @@ export const SERVERS = [
   // 'https://inv.in.projectsegfau.lt',
   'https://inv.makerlab.tech',
   'https://invidious.slipfox.xyz',
-  'https://inv.pistasjis.net',
+  // 'https://inv.pistasjis.net',
   'https://par1.iv.ggtyler.dev',
   'https://iv.melmac.space',
   // 'https://invidious.lunar.icu',
@@ -154,4 +154,8 @@ export const randomFetch = (input: string) => {
   const inp = `${randomServer}/${input}`
   console.log('debug randomFetch', inp)
   return fetch(inp)
+}
+
+export const t = (cond: boolean, classNamesTrue: string, classNamesFalse = '') => {
+  return cond ? ` ${classNamesTrue} ` : ` ${classNamesFalse} `
 }

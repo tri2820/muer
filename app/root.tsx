@@ -1,12 +1,10 @@
 import { HomeIcon, MagnifyingGlassIcon, RectangleStackIcon } from "@heroicons/react/20/solid";
-import { Bars3BottomRightIcon, HeartIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
-import { HeartIcon as SolidHeartIcon } from "@heroicons/react/24/solid";
-import { BackwardIcon, EllipsisVerticalIcon, ForwardIcon, PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
+import { Bars3BottomRightIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { BackwardIcon, EllipsisVerticalIcon, ForwardIcon, HeartIcon, MusicalNoteIcon, PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import type {
-  ActionArgs,
   LinksFunction,
   LoaderArgs,
-  MetaFunction,
+  MetaFunction
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -17,10 +15,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useActionData,
   useFetcher,
-  useLoaderData,
-  useSubmit,
+  useLoaderData
 } from "@remix-run/react";
 import CImage from "~/components/cimage";
 
@@ -30,26 +26,31 @@ import { ResizableBox } from 'react-resizable';
 
 
 
-
 import Player from "~/components/Player";
 
+
+import { useAtom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 
 
 
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
+import ReactPlayer from "react-player";
+import HeartButton from "./components/HeartButton";
 import { getUser } from "./session.server";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import ReactPlayer from "react-player";
-import VideoThumbnail from "./components/videoThumbnail";
-import { randomFetch } from "./utils";
-import HeartButton from "./components/HeartButton";
+import overlayscrollbars from 'overlayscrollbars/overlayscrollbars.css';
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+
+import ItemPlaylist from "./components/ItemPlaylist";
+import { t } from "./utils";
 
 export const meta: MetaFunction = () => {
   return { title: "Chomper" };
 };
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
+  return [{ rel: "stylesheet", href: tailwindStylesheetUrl },{ rel: "stylesheet", href: overlayscrollbars }];
 };
 
 export async function loader({ request }: LoaderArgs) {
@@ -69,6 +70,7 @@ export async function loader({ request }: LoaderArgs) {
 
 // export const shouldRevalidate = () => false;
 
+const heartedVideosAtom = atomWithStorage('heartedVideos', [] as any[])
 
 export default function App() {
   const { env } = useLoaderData<typeof loader>()
@@ -76,6 +78,7 @@ export default function App() {
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   )
   const [playingVideoData, setPlayingVideoData] = useState<{ [key: string]: any } | null>();
+  const [heartedVideos, setHeartedVideos] = useAtom(heartedVideosAtom)
   
   const fetcher = useFetcher();
   // Walkround until https://github.com/remix-run/remix/discussions/2775 implemented
@@ -123,11 +126,13 @@ export default function App() {
   }, [fetcher.data])
 
   useEffect(() => {
-    console.log('debug root re-render')
-  }, [])
+    console.log('debug heartedVideos', heartedVideos)
+  }, [heartedVideos])
 
   const onHeartClick = async ({ videoId, hearted }: any) => {
     console.log('debug heart clicked', videoId, hearted)
+    const newHeartedVideos = hearted ? [...heartedVideos, videoId] : heartedVideos.filter(v => v != videoId);
+    setHeartedVideos(newHeartedVideos)
   }
 
   const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any) => {
@@ -187,6 +192,7 @@ export default function App() {
   })
 
   const playerRef = useRef<ReactPlayer | null>(null);
+  const [libraryHeaderShowShadow, setLibraryHeaderShowShadow] = useState(false);
 
   return (
     <html lang="en" className="h-full scrollbar-none">
@@ -197,7 +203,7 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full font-inter">
-
+      
         <div className="min-h-screen bg-black flex flex-col">
           {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(actionData?.video)}</p> */}
           {/* <p className="bg-green-400 px-4 py-2">{JSON.stringify(playingVideoData)}</p> */}
@@ -220,7 +226,8 @@ export default function App() {
               axis="x"
             >
               <div className="
-          overflow-y-hidden hover:overflow-y-auto scrollbar scrollbar-thumb-white/40 hover:scrollbar-thumb-white/60 scrollbar-track-transparent
+          overflow-y-hidden 
+          
           flex-grow
           flex
           flex-col
@@ -246,32 +253,62 @@ export default function App() {
                   </NavLink>
                 </div>
 
-                <div className="bg-neutral-900 rounded-lg px-6 py-4 flex-1">
-                  <div className="flex items-center text-neutral-400 space-x-4">
+                <div className="bg-neutral-900 rounded-lg flex-1 flex
+                flex-col
+                overflow-y-hidden 
+                ">
+
+                  <div className={"flex items-center text-neutral-400 space-x-4 px-6 flex-none py-4 "
+                    + t(libraryHeaderShowShadow, 'shadow-lg shadow-black')
+                  }>
                     <RectangleStackIcon className="w-6 h-6" />
                     <span className="font-semibold">Your Library</span>
                   </div>
+                  <OverlayScrollbarsComponent
+                    defer
+                    element="div"
+                    options={{ scrollbars: { autoHide: 'leave', autoHideDelay: 0 } }}
+                    className="px-2 flex-1 py-2"
+                    events={{ scroll: (instance, event) => { 
+                      const { viewport } = instance.elements();
+                      const { scrollLeft, scrollTop } = viewport; 
+                      setLibraryHeaderShowShadow(scrollTop > 0)
+                   } }}
+                    >
+                  
+                    <ItemPlaylist type="likedsongs"/>
+                    {
+                      [0, 1,2,3,4,5,6,7,8,9].map(x => {
+                        return <ItemPlaylist key={x}/>
+                      })
+                    }
+                  </OverlayScrollbarsComponent>
+
                 </div>
               </div>
             </ResizableBox>
-            <div className="
-          bg-neutral-900 
-            overflow-y-auto scrollbar scrollbar-thumb-white/40 hover:scrollbar-thumb-white/60 scrollbar-track-transparent
-            overflow-x-hidden
-            w-full
-            rounded-lg
-            ">
 
 
+
+            
+            <OverlayScrollbarsComponent
+              defer
+              element="div"
+              options={{ scrollbars: { autoHide: 'leave', autoHideDelay: 0 } }}
+              className="
+                bg-neutral-900 
+                overflow-y-auto
+                overflow-x-hidden
+                w-full
+                rounded-lg
+              ">
               <Outlet context={{ supabase, env, onThumbnailClick }} />
 
 
 
-            </div>
+              </OverlayScrollbarsComponent>
+            
 
-            {/* <div className=" bg-neutral-900 overflow-y-auto rounded-lg">
-          <p>One</p>
-        </div> */}
           </div>
 
           <div className="flex-none bg-black h-20 grid grid-cols-11 px-4 space-x-4">
@@ -488,14 +525,12 @@ export default function App() {
           </div>
         </div>
 
-
-
-
         <ScrollRestoration />
         <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="chomper.tri" />
         <Scripts />
         <LiveReload />
       </body>
+      
     </html>
   );
 }

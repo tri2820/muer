@@ -1,5 +1,5 @@
 export default function SearchIndexPage() {
     return <div>
-        <p> Index </p>
+        {/* <p> Suggested </p> */}
     </div>
 }
