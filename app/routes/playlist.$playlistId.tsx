@@ -68,8 +68,8 @@ export default function PlaylistPage() {
         {
             [0, 1,2,3,4,5,6,7,8,9, 10, 11].map(x => {
                 return <tr className="group/row cursor-pointer transition-all duration-150">
-                        <td className="pl-4 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400 ">{x}</td>
-                        <td className="py-4 pr-4 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail/></td>
+                        <td className="pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400 ">{x}</td>
+                        <td className="py-3 pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail/></td>
                     </tr>
               })
         }
