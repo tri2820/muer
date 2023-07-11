@@ -3,7 +3,20 @@ import ReactPlayer from "react-player"
 
 // Youtube embed fallback
 export default function Player({
-    playerRef, urls = [], playing, onStart, onBuffer, onBufferEnd, onReady, onProgress, onPause, onEnded, onDuration, onVideoError }: any) {
+        playerRef, 
+        urls = [], 
+        playing, 
+        onStart, 
+        onBuffer, 
+        onBufferEnd, 
+        onReady, 
+        onProgress, 
+        onPause, 
+        onEnded, 
+        onDuration, 
+        onVideoError,
+        volume = 1 
+    }: any) {
     const [failedUrls, setFailedUrls] = useState<string[]>([])
     // console.log(urls)
     const url = urls.find((x: string) => !failedUrls.some(y => y == x))
@@ -37,5 +50,7 @@ export default function Player({
         }}
         className="hidden"
         pip={false}
-        url={url} />
+        url={url} 
+        volume={volume}
+        />
 }

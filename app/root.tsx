@@ -110,7 +110,8 @@ export default function App() {
       }
     });
 
-    setPlayerState({
+    setPlayerState((p) => ({
+      ...p,
       playing: true,
       played: 0,
       playedSeconds: 0,
@@ -120,7 +121,7 @@ export default function App() {
       duration: undefined,
       progressValues: [0],
       error: false
-    })
+    }))
 
     setFetcherDataShouldUpdateState(false)
   }, [fetcher.data])
@@ -154,7 +155,8 @@ export default function App() {
       videoId
     })
 
-    setPlayerState({
+    setPlayerState((p) => ({
+      ...p,
       playing: true,
       played: 0,
       playedSeconds: 0,
@@ -164,7 +166,7 @@ export default function App() {
       duration: undefined,
       progressValues: [0],
       error: false
-    })
+    }))
 
     // fetcher.submit(
     //   { videoId: videoId },
@@ -188,7 +190,8 @@ export default function App() {
     buffering: false,
     duration: undefined as (number | undefined),
     progressValues: [0],
-    error: false
+    error: false,
+    volume: 1
   })
 
   const playerRef = useRef<ReactPlayer | null>(null);
@@ -365,8 +368,8 @@ export default function App() {
 
 
                 <div className="space-x-2 mx-auto flex items-center ">
-                  <p className="text-xs text-neutral-400 w-10 text-center">{
-                    new Date(playerState.playedSeconds * 1000).toISOString().substring(14, 19)
+                  <p className="text-xs text-neutral-400 w-10 text-center select-none">{
+                    new Date(playerState.playedSeconds * 1000).toISOString().substring(14, 19).replace(/^0/, '')
                   }</p>
 
                   <Range
@@ -426,9 +429,9 @@ export default function App() {
                       />
                     )}
                   />
-                  <p className="text-xs text-neutral-400 w-10" >{
-                    playerState.duration ?
-                      new Date(playerState.duration * 1000).toISOString().substring(14, 19) :
+                  <p className="text-xs text-neutral-400 w-10 select-none" >{
+                    playerState.duration ? 
+                    `-${new Date((playerState.duration - playerState.playedSeconds) * 1000).toISOString().substring(14, 19).replace(/^0/, '')}` :
                       '--:--'
                   }</p>
 
@@ -439,7 +442,65 @@ export default function App() {
             <div className="col-span-3 flex items-center space-x-2 justify-end ">
               <Bars3BottomRightIcon className="w-6 h-6 text-neutral-400 flex-none" />
               <SpeakerWaveIcon className="w-6 h-6 text-neutral-400 flex-none" />
-              <div className="h-1 bg-white w-1/2 rounded-full flex-shrink" />
+              {/* <div className="h-1 bg-white w-1/2 rounded-full flex-shrink" /> */}
+              <div className="w-1/2 flex-shrink">
+              <Range
+                    step={0.001}
+                    min={0}
+                    max={1}
+                    values={[playerState.volume]}
+                    onChange={(values: any) => {
+                      setPlayerState((p) => ({
+                        ...p,
+                        volume: values.at(0)
+                      }))
+
+                    }}
+                    onFinalChange={(values: any) => {
+                      setPlayerState((p) => ({
+                        ...p,
+                        volume: values.at(0)
+                      }))
+                      // playerRef?.current?.seekTo(values[0])
+                    }}
+                    renderTrack={({ props, children }) => (
+                      <div
+                        onMouseDown={props.onMouseDown}
+                        onTouchStart={props.onTouchStart}
+                        className='w-full py-1 group flex '
+                        style={props.style}
+                      >
+                        <div
+                          className='w-full h-1 rounded-full overflow-hidden bg-white group-hover:bg-green-500'>
+                          <div ref={props.ref}
+                            style={{
+                              background: getTrackBackground({
+                                values: [playerState.volume],
+                                colors: [
+                                  "transparent", '#525252'],
+                                min: 0,
+                                max: 1
+                              })
+                            }}
+                            className="w-full h-1">
+                            {children}
+                          </div>
+                        </div>
+
+                      </div>
+                    )}
+                    renderThumb={({ props, isDragged }) => (
+                      <div
+                        className='invisible group-hover:visible focus:outline-none h-3 w-3 rounded-full shadow bg-white'
+                        {...props}
+                        style={{
+                          ...props.style,
+                          ...(isDragged && { visibility: 'visible' })
+                        }}
+                      />
+                    )}
+                  />
+                  </div>
             </div>
 
             <Player
@@ -520,6 +581,7 @@ export default function App() {
                 `https://www.youtube.com/watch?v=${playingVideoData?.videoId}`
                 ]
               }
+              volume={playerState.volume}
             />
 
           </div>
