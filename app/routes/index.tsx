@@ -66,7 +66,7 @@ export default function IndexPage() {
 
   return (
 
-    <div className="px-6 py-8 bg-gradient-to-b from-violet-950/60 bg-no-repeat bg-[length:auto_50vh]">
+    <div className="px-6 py-16 bg-gradient-to-b from-violet-950/60 bg-no-repeat bg-[length:auto_50vh]">
 
       <p className="text-white font-bold text-3xl tracking-tight">Good morning</p>
       <p className="text-white font-bold text-2xl tracking-tight py-6">Trending</p>
@@ -76,7 +76,7 @@ export default function IndexPage() {
       />
       <div className="py-16">
         <p className="text-sm text-white font-semibold py-2">Organization</p>
-        <p className="text-sm text-neutral-400 py-2">Chomper is a modern, open source front-end to both decentralized/centralized music. Powered by Invidious.</p>
+        <p className="text-sm text-neutral-400 py-2">Chomper is a modern, music-centric front-end of Invidious.</p>
       </div>
 
     </div>

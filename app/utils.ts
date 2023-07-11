@@ -145,7 +145,7 @@ export const SERVERS = [
   'https://par1.iv.ggtyler.dev',
   'https://iv.melmac.space',
   // 'https://invidious.lunar.icu',
-  'https://yt.oelrichsgarcia.de',
+  // 'https://yt.oelrichsgarcia.de',
   // 'https://inv.zzls.xyz'
 ]
 

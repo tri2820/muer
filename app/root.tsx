@@ -173,7 +173,7 @@ export default function App() {
     //   { method: "post",  }
     // );
     // if (fetcher.state === "idle" && fetcher.data == null) {
-    fetcher.load(`/video/${videoId}`);
+    fetcher.load(`/videoData/${videoId}`);
     setFetcherDataShouldUpdateState(true)
     // }
 
@@ -279,10 +279,10 @@ export default function App() {
                    } }}
                     >
                   
-                    <ItemPlaylist type="likedsongs"/>
+                    <ItemPlaylist id={0} type="likedsongs"/>
                     {
-                      [0, 1,2,3,4,5,6,7,8,9].map(x => {
-                        return <ItemPlaylist key={x}/>
+                      [1,2,3,4,5,6,7,8,9].map(x => {
+                        return <ItemPlaylist id={x} key={x}/>
                       })
                     }
                   </OverlayScrollbarsComponent>

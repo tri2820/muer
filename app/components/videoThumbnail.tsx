@@ -1,5 +1,6 @@
 import { PlayIcon } from "@heroicons/react/20/solid";
 import CImage from "./cimage";
+import PlayButton from "./PlayButton";
 
 
 function VideoThumbnail({ url, title, author, videoId, onThumbnailClick }: any) {
@@ -25,22 +26,11 @@ function VideoThumbnail({ url, title, author, videoId, onThumbnailClick }: any) 
                 heightLargerThan={640}
             />
 
-            <div className="
-                absolute
-                hover:scale-105
-                bottom-2 right-2
-                ">
-                <button className="p-3 
-                    translate-y-2 opacity-0 
-                    bg-green-500 
-                    hover:bg-green-400 
-                    group-hover:opacity-100 group-hover:translate-y-0 
-                    transition-all duration-300
-                    rounded-full
-                    shadow-lg shadow-neutral-900/50
-                ">
-                    <PlayIcon className="w-6 h-6 text-black" />
-                </button>
+            <div className="absolute bottom-2 right-2">
+                <PlayButton 
+                className='p-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300'
+                iconClassName='w-6 h-6'
+                />
             </div>
         </div>
 

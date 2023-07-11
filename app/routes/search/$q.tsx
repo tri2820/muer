@@ -33,7 +33,7 @@ export async function loader({ params }: LoaderArgs) {
 }
 
 
-export default function SearchIndexPage() {
+export default function SearchPage() {
     const loaderData = useLoaderData();
     const { onThumbnailClick } = useOutletContext<any>()
     const videos = loaderData?.results?.filter((x: any) => x.type == 'video')
