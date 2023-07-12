@@ -1,8 +1,10 @@
-import { MusicalNoteIcon } from "@heroicons/react/20/solid";
+import { MusicalNoteIcon, PlayIcon } from "@heroicons/react/20/solid";
 import { LoaderArgs, json } from "@remix-run/node";
 import { useLoaderData, useOutletContext } from "@remix-run/react";
+import { useAtom } from "jotai";
 import { z } from "zod";
 import { zx } from "zodix";
+import { playlistsAtom } from "~/atoms";
 import PlayButton from "~/components/PlayButton";
 import PlaylistIcon from "~/components/PlaylistIcon";
 import ThumbnailGrid from "~/components/ThumbnailGrid";
@@ -26,35 +28,49 @@ export async function loader({ params }: LoaderArgs) {
 
 export default function PlaylistPage() {
     const loaderData = useLoaderData();
-    // const { onThumbnailClick } = useOutletContext<any>()
+    const [playlists, setPlaylists] = useAtom(playlistsAtom);
+    // use Atom
+    const playlist = playlists.find(x => x.id == loaderData.playlistId) 
+    const { onThumbnailClick } = useOutletContext<any>()
     // const videos = loaderData?.results?.filter((x: any) => x.type == 'video')
     // const musicVideos = videos.filter()
+    const isHearted = playlist?.type == 'hearted'
+
+    if (!playlist) return <div>
+        <p className="text-red-500">Cannot find this playlist</p>
+    </div>
 
     return <div>
         <div className="flex items-end space-x-4 p-6 pt-16 bg-indigo-700/70 bg-gradient-to-t from-black/50">
             
-            <PlaylistIcon 
-            className="shadow-lg shadow-black w-56 h-56" 
-            isLikedSongs={true}
-            iconClassName="w-24 h-24"
-            />
+            
+                <PlaylistIcon 
+                className="shadow-lg shadow-black w-56 h-56" 
+                isHearted={isHearted}
+                iconClassName="w-24 h-24"
+                />
+            
 
             <div className="space-y-10">
                 <div className="space-y-4">
                     <p className="text-white text-sm font-bold">Playlist</p>
-                    <p className="text-white text-8xl font-extrabold">Liked Songs</p>
+                    <p className="text-white text-8xl font-extrabold">{isHearted ? 'Liked Songs' : 'Let It Out' }</p>
                 </div>
                 <div className="flex items-center space-x-1">
                     <MusicalNoteIcon className="w-4 h-4 text-white"/>
-                    <p className="text-white text-sm font-medium">139 songs</p>
+                    <p className="text-white text-sm font-medium">{playlist.videos.length} songs</p>
                 </div>
             </div>
         </div>
 
-        <div className="bg-gradient-to-b from-indigo-950/60 bg-no-repeat bg-[length:auto_25vh] 
+        { 
+            playlist.videos.length > 0 && 
+            <div className="bg-gradient-to-b from-indigo-950/60 bg-no-repeat bg-[length:auto_25vh] 
         px-6 py-6 space-y-6">
             
-        <PlayButton  iconClassName="w-7 h-7 " className="p-4"/>
+        
+            <PlayButton  iconClassName="w-7 h-7 " className="p-4"/> 
+        
         
         <table className="w-full border-separate border-spacing-0 ">
   {/* <thead>
@@ -65,18 +81,35 @@ export default function PlaylistPage() {
   </thead> */}
   <tbody>
     
-        {
-            [0, 1,2,3,4,5,6,7,8,9, 10, 11].map(x => {
-                return <tr key={x} className="group/row cursor-pointer transition-all duration-150">
-                        <td className="pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400 ">{x}</td>
-                        <td className="py-3 pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail/></td>
-                    </tr>
-              })
-        }
+    {
+        playlist.videos.map((x, i) => {
+            return <tr 
+            onClick={() => {
+                onThumbnailClick({
+                    videoId: x.id,
+                    thumbnailUrl: x.thumbnailUrl,
+                    title: x.title,
+                    author: x.author
+                })
+            }}
+            key={x.id} className="group/row cursor-pointer transition-all duration-150 ">
+                            <td className="w-16 pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400">
+                                <span className="group-hover/row:hidden">{i}</span>
+                                <span className="hidden group-hover/row:block text-white">{
+                                    <PlayIcon className="w-4 h-4"/>
+                                }</span>
+                            </td>
+                            <td className="p-3 pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail video={x}/></td>
+                            {/* <p className="text-white">{x.thumbnailBase64}</p> */}
+            </tr>
+
+        })
+    }
       
   </tbody>
 </table>
  
         </div>
+        }
     </div>
 }

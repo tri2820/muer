@@ -44,6 +44,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 import ItemPlaylist from "./components/ItemPlaylist";
 import { t } from "./utils";
+import { Video, playlistsAtom } from "./atoms";
 
 export const meta: MetaFunction = () => {
   return { title: "Chomper" };
@@ -70,9 +71,6 @@ export async function loader({ request }: LoaderArgs) {
 
 // export const shouldRevalidate = () => false;
 
-const playlistsAtom = atomWithStorage('playlists', [
-  {id: '0000-0000-0000-0000', type: 'hearted', videos: [] as string[]}
-])
 
 export default function App() {
   const { env } = useLoaderData<typeof loader>()
@@ -132,12 +130,22 @@ export default function App() {
     console.log('debug playlists changed', playlists)
   }, [playlists])
 
-  const onHeartClick = async ({ videoId }: any) => {
-    console.log('debug heart clicked', videoId);
+
+  const onHeartClick = async ({ playingVideoData }: any) => {
+    console.log('debug heart clicked', playingVideoData);
     const heartedPlaylist = playlists.find(x => x.type ==  'hearted');
     if (!heartedPlaylist) return;
-    const hearted = heartedPlaylist.videos.some((vid: string) => vid == videoId);
-    heartedPlaylist.videos = hearted ? heartedPlaylist.videos.filter((vid: string) => vid != videoId) :  [...heartedPlaylist.videos, videoId];
+    const hearted = heartedPlaylist.videos.some((video) => video.id == playingVideoData.videoId);
+
+    const thumbnailUrl = playingVideoData?.videoThumbnails?.at(0)?.url;
+
+    const newVideo = {
+      id: playingVideoData.videoId,
+      author: playingVideoData?.musicTracks?.at(0).artist || playingVideoData?.author || 'Unamed Author',
+      title: playingVideoData?.musicTracks?.at(0).song || playingVideoData?.title || 'Unamed Song',
+      thumbnailUrl: thumbnailUrl
+    };
+    heartedPlaylist.videos = hearted ? heartedPlaylist.videos.filter((video) => video.id != playingVideoData.videoId) :  [...heartedPlaylist.videos, newVideo];
     setPlaylists([...playlists])
   }
 
@@ -284,10 +292,9 @@ export default function App() {
                    } }}
                     >
                   
-                    <ItemPlaylist id={0} type="likedsongs"/>
                     {
-                      [1,2,3,4,5,6,7,8,9].map(x => {
-                        return <ItemPlaylist id={x} key={x}/>
+                      playlists.map(playlist => {
+                        return <ItemPlaylist playlist={playlist}/>
                       })
                     }
                   </OverlayScrollbarsComponent>
@@ -343,8 +350,8 @@ export default function App() {
               {
                 playingVideoData &&
                 <div className="flex-none">
-                <HeartButton videoId={playingVideoData.videoId} onHeartClick={onHeartClick} hearted={
-                  playlists.find(x => x.type == 'hearted')?.videos.some((vid: string) => vid == playingVideoData.videoId)
+                <HeartButton playingVideoData={playingVideoData} onHeartClick={onHeartClick} hearted={
+                  playlists.find(x => x.type == 'hearted')?.videos.some((video) => video.id == playingVideoData.videoId)
                 }/>
               </div>
               }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { t } from "~/utils";
 import heartAnimation from "../../public/heart.json";
 
-export default function HeartButton({ videoId, onHeartClick, hearted }: any) {
+export default function HeartButton({ playingVideoData, onHeartClick, hearted }: any) {
     const lottieRef = useRef<any>();
     const [clickedOnce, setClickedOnce] = useState(false)
     useEffect(() => {
@@ -14,7 +14,7 @@ export default function HeartButton({ videoId, onHeartClick, hearted }: any) {
         }
         const frame = lottieRef.current?.getDuration(true);
         lottieRef.current?.goToAndStop(frame, true);
-    },[videoId])
+    },[playingVideoData.videoId])
 
     return <div className="w-6 h-6 relative">
         <HeartIcon
@@ -24,7 +24,7 @@ export default function HeartButton({ videoId, onHeartClick, hearted }: any) {
             + t(!hearted && clickedOnce, 'animate-wiggle-more animate-fill-backwards animate-duration-150')
         }
         onClick={() => {
-            onHeartClick?.({ videoId });
+            onHeartClick?.({ playingVideoData });
             setClickedOnce(true)
         }}/>
 
