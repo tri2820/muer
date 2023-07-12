@@ -58,6 +58,7 @@
     "react-range": "^1.8.14",
     "react-resizable": "^3.0.5",
     "remix-utils": "^6.4.1",
+    "tailwindcss-animated": "^1.0.1",
     "tiny-invariant": "^1.2.0",
     "zod": "^3.21.4",
     "zodix": "^0.4.1"

@@ -70,7 +70,9 @@ export async function loader({ request }: LoaderArgs) {
 
 // export const shouldRevalidate = () => false;
 
-const heartedVideosAtom = atomWithStorage('heartedVideos', [] as any[])
+const playlistsAtom = atomWithStorage('playlists', [
+  {id: '0000-0000-0000-0000', type: 'hearted', videos: [] as string[]}
+])
 
 export default function App() {
   const { env } = useLoaderData<typeof loader>()
@@ -78,7 +80,7 @@ export default function App() {
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   )
   const [playingVideoData, setPlayingVideoData] = useState<{ [key: string]: any } | null>();
-  const [heartedVideos, setHeartedVideos] = useAtom(heartedVideosAtom)
+  const [playlists, setPlaylists] = useAtom(playlistsAtom)
   
   const fetcher = useFetcher();
   // Walkround until https://github.com/remix-run/remix/discussions/2775 implemented
@@ -127,13 +129,16 @@ export default function App() {
   }, [fetcher.data])
 
   useEffect(() => {
-    console.log('debug heartedVideos', heartedVideos)
-  }, [heartedVideos])
+    console.log('debug playlists changed', playlists)
+  }, [playlists])
 
-  const onHeartClick = async ({ videoId, hearted }: any) => {
-    console.log('debug heart clicked', videoId, hearted)
-    const newHeartedVideos = hearted ? [...heartedVideos, videoId] : heartedVideos.filter(v => v != videoId);
-    setHeartedVideos(newHeartedVideos)
+  const onHeartClick = async ({ videoId }: any) => {
+    console.log('debug heart clicked', videoId);
+    const heartedPlaylist = playlists.find(x => x.type ==  'hearted');
+    if (!heartedPlaylist) return;
+    const hearted = heartedPlaylist.videos.some((vid: string) => vid == videoId);
+    heartedPlaylist.videos = hearted ? heartedPlaylist.videos.filter((vid: string) => vid != videoId) :  [...heartedPlaylist.videos, videoId];
+    setPlaylists([...playlists])
   }
 
   const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any) => {
@@ -338,7 +343,9 @@ export default function App() {
               {
                 playingVideoData &&
                 <div className="flex-none">
-                <HeartButton videoId={playingVideoData.videoId} onHeartClick={onHeartClick}/>
+                <HeartButton videoId={playingVideoData.videoId} onHeartClick={onHeartClick} hearted={
+                  playlists.find(x => x.type == 'hearted')?.videos.some((vid: string) => vid == playingVideoData.videoId)
+                }/>
               </div>
               }
             </div>

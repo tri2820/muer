@@ -12,6 +12,7 @@ module.exports = {
     require('@tailwindcss/line-clamp'),
     // require('tailwind-scrollbar')({ nocompatible: true }),
     require('@tailwindcss/container-queries'),
+    require('tailwindcss-animated')
     // scrollbarGutter(), // no options to configure
     // scrollbarWidth(), // no options to configure
     // scrollbarColor(), // no options to configure
