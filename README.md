@@ -1,17 +1,17 @@
-# Rider Player
-Rider player is a modern, open source front-end for Youtube, based on Invidious. It has:
+# Muer
+Muer is a modern, open source music player, based on Invidious. It has:
 - Better UI/UX
 - No ads
 - Better playlist management
 - Default fallback using Youtube embedded player
-- Federated design (people host their own instance of Rider)
+- Federated design (people host their own instance of Muer)
 
-![Screenshot of Rider Player](public/screenshot.png)
+![Screenshot of Muer Player](public/screenshot.png)
 
 # Development
 Want to code immediately? Click this button
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new/tri2820/rider?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new/muer-org/muer?quickstart=1)
 
 This button will start (or resume) a Github Codespaces for this repo, with packages installed. You can then follow step 2 - 3 as below.
 
@@ -19,8 +19,8 @@ This button will start (or resume) a Github Codespaces for this repo, with packa
 1. Clone & Install all dependencies
 
   ```sh
-  git clone https://github.com/tri2820/rider
-  cd rider
+  git clone https://github.com/muer-org/muer
+  cd muer
   npm install
   ```
 
@@ -50,7 +50,7 @@ This button will start (or resume) a Github Codespaces for this repo, with packa
 # Deployment
 Quickest way is to deploy to Netlify. Want to deploy immediately? Click this button.
 
-[![Deploy to Netlify Button](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tri2820/rider)
+[![Deploy to Netlify Button](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/muer-org/muer)
 
 Clicking this button will start the setup for a new project and deployment.
 
@@ -59,10 +59,9 @@ Clicking this button will start the setup for a new project and deployment.
 Clone this repo with the `git clone` command. Then install the [Netlify CLI](https://docs.netlify.com/cli/get-started/) tool and run `netlify init`.
 
 ```sh
-git clone https://github.com/tri2820/rider
-
+git clone https://github.com/muer-org/muer
+cd muer
 npm install netlify-cli -g # to install the Netlify CLI tool globally
-
 netlify init # initialize a new Netlify project & deploy
 ```
 
@@ -73,7 +72,7 @@ Using the 'Deploy to Netlify' button or the `init` process will also set up cont
 
 ## Host on your own platform & alternative PaaS
 
-By hosting Rider on various platforms, you help ensure the future of this project. While we use Netlify by default due to its simplicity and speed, we highly encourage individuals to explore and document their experiences with running Rider on alternative platforms.
+By hosting Muer on various platforms, you help ensure the future of this project. While we use Netlify by default due to its simplicity and speed, we highly encourage individuals to explore and document their experiences with running Muer on alternative platforms.
 
 To run production server on your own platform using Netlify Dev
 
