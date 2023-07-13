@@ -47,7 +47,7 @@ import { t } from "./utils";
 import { Video, playlistsAtom } from "./atoms";
 
 export const meta: MetaFunction = () => {
-  return { title: "Chomper" };
+  return { title: "Muer" };
 };
 
 export const links: LinksFunction = () => {
@@ -602,7 +602,7 @@ export default function App() {
         </div>
 
         <ScrollRestoration />
-        <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="chomper.tri" />
+        {/* <script async src="https://analytics.umami.is/script.js" data-website-id="c5be99c2-ff1e-4af1-9a2e-99f571f2d804" data-domains="" /> */}
         <Scripts />
         <LiveReload />
       </body>

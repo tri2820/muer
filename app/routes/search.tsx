@@ -9,7 +9,7 @@ import VideoThumbnail from "~/components/videoThumbnail";
 
 
 export const meta: MetaFunction = () => {
-    return { title: "Chomper - Search" };
+    return { title: "Muer - Search" };
 };
 
 export async function action({ request, params }: ActionArgs) {

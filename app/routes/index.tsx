@@ -76,7 +76,7 @@ export default function IndexPage() {
       />
       <div className="py-16">
         <p className="text-sm text-white font-semibold py-2">Organization</p>
-        <p className="text-sm text-neutral-400 py-2">Chomper is a modern, music-centric front-end of Invidious.</p>
+        <p className="text-sm text-neutral-400 py-2">Muer is a modern, music-centric front-end of Invidious.</p>
       </div>
 
     </div>
