@@ -54,6 +54,12 @@ Quickest way is to deploy to Netlify. Want to deploy immediately? Click this but
 
 Clicking this button will start the setup for a new project and deployment.
 
+Copy environment variables from the `.env.sample` file like so
+![Setup environment variables](public/screenshot_env.png)
+
+Then deploy again
+![Deploy again](public/screenshot_deploy_again.png)
+
 ## Deploy from the Command Line
 
 Clone this repo with the `git clone` command. Then install the [Netlify CLI](https://docs.netlify.com/cli/get-started/) tool and run `netlify init`.
@@ -63,6 +69,7 @@ git clone https://github.com/muer-org/muer
 cd muer
 npm install netlify-cli -g # to install the Netlify CLI tool globally
 netlify init # initialize a new Netlify project & deploy
+# Set env variables as above
 ```
 
 ## CI/CD
