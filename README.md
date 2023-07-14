@@ -1,6 +1,6 @@
 # Muer
 Muer is a modern, open source music player for you and your friends. It has:
-- Beatiful UI/UX
+- Beautiful UI/UX
 - No ads
 - Local-first playlist management
 - Default fallback using Youtube embedded player
