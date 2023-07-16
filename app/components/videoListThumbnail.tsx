@@ -1,6 +1,7 @@
+import { Video } from "~/atoms";
 import CImage from "./cimage";
 
-export default function VideoListThumbnail({video}: any){
+export default function VideoListThumbnail({video}: {video: Video}){
     return <div className="flex items-center space-x-4">
             
           <CImage

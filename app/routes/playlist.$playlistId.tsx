@@ -54,7 +54,7 @@ export default function PlaylistPage() {
             <div className="space-y-10">
                 <div className="space-y-4">
                     <p className="text-white text-sm font-bold">Playlist</p>
-                    <p className="text-white text-8xl font-extrabold">{isHearted ? 'Liked Songs' : 'Let It Out' }</p>
+                    <p className="text-white text-8xl font-extrabold">{playlist.name}</p>
                 </div>
                 <div className="flex items-center space-x-1">
                     <MusicalNoteIcon className="w-4 h-4 text-white"/>

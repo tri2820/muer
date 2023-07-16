@@ -10,12 +10,7 @@ export default function ItemPlaylist({playlist}: any){
     className={({ isActive, isPending }) =>
     "flex items-center space-x-2 px-2 py-2 hover:bg-white/2 rounded-lg cursor-pointer"
     + t(isActive, 'bg-white/8')
-    }
-    
-    onClick={() => {
-
-    }}
-    >
+    }>
     <PlaylistIcon 
         className="rounded shadow-lg shadow-black w-10 h-10" 
         isHearted={isHearted}
@@ -29,13 +24,11 @@ export default function ItemPlaylist({playlist}: any){
             + t(isHearted, 'text-green-500', 'text-white')
         }>
             {
-                isHearted ? 
-                'Liked Songs' : 
-                'Let It Out'
+                playlist.name
             }
         </p>
       
-        <p className="text-neutral-400 font-medium text-xs">Author</p>
+        <p className="text-neutral-400 font-medium text-xs">{playlist.creator}</p>
     </div>
   </NavLink>
 }

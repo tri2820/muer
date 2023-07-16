@@ -1,10 +1,10 @@
 # Muer
-Muer is a modern, open source music player for you and your friends. It has:
+Muer is a modern, open-source music player for you and your friends. 
+Features:
 - Beautiful UI/UX
 - No ads
-- Local-first playlist management
 - Default fallback using Youtube embedded player
-- Federated design (people host their own instance of Muer)
+- Self-hosted
 
 Muer is based on Invidious.
 

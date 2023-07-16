@@ -1,5 +1,5 @@
-import { HomeIcon, MagnifyingGlassIcon, RectangleStackIcon } from "@heroicons/react/20/solid";
-import { Bars3BottomRightIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
+import { HomeIcon as HomeIconSolid, MagnifyingGlassIcon as MagnifyingGlassIconSolid ,RectangleStackIcon } from "@heroicons/react/20/solid";
+import { HomeIcon, MagnifyingGlassIcon, Bars3BottomRightIcon, QueueListIcon, SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { BackwardIcon, EllipsisVerticalIcon, ForwardIcon, HeartIcon, MusicalNoteIcon, PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
 import type {
   LinksFunction,
@@ -37,14 +37,14 @@ import { atomWithStorage } from 'jotai/utils';
 import { createBrowserClient } from "@supabase/auth-helpers-remix";
 import ReactPlayer from "react-player";
 import HeartButton from "./components/HeartButton";
-import { getUser } from "./session.server";
+import { getUser, requireUser } from "./session.server";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import overlayscrollbars from 'overlayscrollbars/overlayscrollbars.css';
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 import ItemPlaylist from "./components/ItemPlaylist";
 import { t } from "./utils";
-import { Video, playlistsAtom } from "./atoms";
+import { Video, playerStateAtom, playingVideoDataAtom, playlistsAtom } from "./atoms";
 
 export const meta: MetaFunction = () => {
   return { title: "Muer" };
@@ -77,12 +77,16 @@ export default function App() {
   const [supabase] = useState(() =>
     createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
   )
-  const [playingVideoData, setPlayingVideoData] = useState<{ [key: string]: any } | null>();
+  const [playingVideoData, setPlayingVideoData] = useAtom(playingVideoDataAtom);
   const [playlists, setPlaylists] = useAtom(playlistsAtom)
   
   const fetcher = useFetcher();
   // Walkround until https://github.com/remix-run/remix/discussions/2775 implemented
   const [fetcherDataShouldUpdateState, setFetcherDataShouldUpdateState] = useState(false);
+
+  useEffect(() => {
+    console.log('debug playingVideoData', playingVideoData)
+  },[playingVideoData])
 
   useEffect(() => {
     console.log('debug fetcher.data', fetcher.data)
@@ -112,14 +116,9 @@ export default function App() {
 
     setPlayerState((p) => ({
       ...p,
-      playing: true,
-      played: 0,
-      playedSeconds: 0,
-      loaded: 0,
-      loadedSeconds: 0,
       buffering: false,
       duration: undefined,
-      progressValues: [0],
+      // progressValues: [0],
       error: false
     }))
 
@@ -175,7 +174,7 @@ export default function App() {
       playedSeconds: 0,
       loaded: 0,
       loadedSeconds: 0,
-      buffering: true,
+      buffering: false,
       duration: undefined,
       progressValues: [0],
       error: false
@@ -192,22 +191,10 @@ export default function App() {
 
   }
 
-
-
-  const [playerState, setPlayerState] = useState({
-    playing: false,
-    played: 0,
-    playedSeconds: 0,
-    loaded: 0,
-    loadedSeconds: 0,
-    buffering: false,
-    duration: undefined as (number | undefined),
-    progressValues: [0],
-    error: false,
-    volume: 1
-  })
+  const [playerState, setPlayerState] = useAtom(playerStateAtom)
 
   const playerRef = useRef<ReactPlayer | null>(null);
+  const [seekedOnce, setSeekedOnce] = useState(false);
   const [libraryHeaderShowShadow, setLibraryHeaderShowShadow] = useState(false);
 
   return (
@@ -252,19 +239,26 @@ export default function App() {
 
                 <div className="bg-neutral-900 rounded-lg px-6 py-4 flex-none space-y-6">
                   <NavLink to='/' className={({ isActive, isPending }) =>
-                    `${isActive ? 'text-white' : 'text-neutral-400'} flex items-center  space-x-4`
+                  'flex items-center space-x-4 hover:text-white transition-all' +
+                  t(isActive, 'text-white', 'text-neutral-400')
                   }>
-                    <HomeIcon className="w-6 h-6" />
-                    <span className="font-semibold">Home</span>
+                    {({ isActive, isPending }) => <>
+                      {isActive ? <HomeIconSolid className="w-6 h-6" /> : <HomeIcon className="w-6 h-6" />}
+                      <span className="font-semibold">Home</span>
+                    </>}
+                    
 
                   </NavLink>
 
                   <NavLink to='/search' className={({ isActive, isPending }) =>
-                    `${isActive ? 'text-white' : 'text-neutral-400'} flex items-center  space-x-4`
+                    'flex items-center  space-x-4 hover:text-white transition-all' +
+                    t(isActive, 'text-white', 'text-neutral-400')
                   }>
+                    {({ isActive, isPending }) => <>
+                      { isActive ? <MagnifyingGlassIconSolid className="w-6 h-6" /> : <MagnifyingGlassIcon className="w-6 h-6" />}
+                      <span className="font-semibold">Search</span>
+                    </>}
 
-                    <MagnifyingGlassIcon className="w-6 h-6" />
-                    <span className="font-semibold">Search</span>
 
                   </NavLink>
                 </div>
@@ -294,7 +288,7 @@ export default function App() {
                   
                     {
                       playlists.map(playlist => {
-                        return <ItemPlaylist playlist={playlist}/>
+                        return <ItemPlaylist key={playlist.id} playlist={playlist}/>
                       })
                     }
                   </OverlayScrollbarsComponent>
@@ -317,7 +311,7 @@ export default function App() {
                 w-full
                 rounded-lg
               ">
-              <Outlet context={{ supabase, env, onThumbnailClick }} />
+              <Outlet context={{ supabase, env, onThumbnailClick, playingVideoData }} />
 
 
 
@@ -454,7 +448,15 @@ export default function App() {
             </div>
 
             <div className="col-span-3 flex items-center space-x-2 justify-end ">
-              <Bars3BottomRightIcon className="w-6 h-6 text-neutral-400 flex-none" />
+              <NavLink to='/radio' className={({ isActive, isPending }) =>
+              'relative hover:scale-105' + 
+                  t(isActive, 'text-green-500 active', 'text-neutral-400 hover:text-white ')}>
+                    {({ isActive, isPending }) => <>
+                      <QueueListIcon className="w-6 h-6 flex-none" />
+                      { isActive && <p className="absolute w-full text-center -bottom-4">•</p> }
+                    </>
+                    }
+              </NavLink>
               <SpeakerWaveIcon className="w-6 h-6 text-neutral-400 flex-none" />
               {/* <div className="h-1 bg-white w-1/2 rounded-full flex-shrink" /> */}
               <div className="w-1/2 flex-shrink">
@@ -522,26 +524,51 @@ export default function App() {
               onVideoError={() => {
                 setPlayerState(p => ({
                   ...p,
-                  playing: true,
-                  played: 0,
-                  playedSeconds: 0,
-                  loaded: 0,
-                  loadedSeconds: 0,
+                  // playing: true,
+                  // played: 0,
+                  // playedSeconds: 0,
+                  // loaded: 0,
+                  // loadedSeconds: 0,
                   error: true
                 }))
               }}
               onReady={() => {
-                setPlayerState(p => ({
-                  ...p,
-                  playing: true,
-                  played: 0,
-                  playedSeconds: 0,
-                  loaded: 0,
-                  loadedSeconds: 0
-                }))
+                console.log('debug on ready', playerState.played)
+                // // From cache
+                // if (!seekedOnce) {
+                //   playerRef?.current?.seekTo(playerState.played, 'fraction')
+                //   setSeekedOnce(true)
+                // }
+                
+
+
+                // 
+
+                // if (playerState.playing)
+                //   playerRef?.current?.play()
+                // setInitPlayer(true)
+                // setPlayerState(p => ({
+                //   ...p,
+                  // playing: true,
+                  // played: 0,
+                  // playedSeconds: 0,
+                  // loaded: 0,
+                  // loadedSeconds: 0
+                // }))
               }}
               playing={playerState.playing}
               onProgress={({ played, playedSeconds, loaded, loadedSeconds }: any) => {
+                console.log('debug played 1', played)
+                if (playerState.justLoadedFromStorage) {
+                  playerRef?.current?.seekTo(playerState.played, 'fraction')
+                  setPlayerState((p) => ({
+                    ...p,
+                    justLoadedFromStorage: false
+                  }))
+                  return;
+                }
+
+                console.log('debug played 2', played)
                 setPlayerState(p => ({
                   ...p,
                   played,
@@ -550,8 +577,6 @@ export default function App() {
                   loadedSeconds,
                   progressValues: [played]
                 }))
-
-
               }}
               onPause={() => setPlayerState(p => ({
                 ...p,
@@ -568,6 +593,7 @@ export default function App() {
               }))}
               onBuffer={() => {
                 console.log('Start buffering')
+                if (!playerState.playing) return;
                 setPlayerState(p => ({
                   ...p,
                   buffering: true

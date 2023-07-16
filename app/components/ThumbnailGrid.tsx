@@ -4,11 +4,11 @@ import VideoThumbnail from "./videoThumbnail";
 export default function ThumbnailGrid({ videos, onThumbnailClick }: any) {
     // console.log(videos)
     const thumbnails = videos?.map((video: any) => {
-        const thumbnail = video.videoThumbnails.find((x: any) => x.quality == 'maxresdefault');
+        const thumbnailUrl = video.videoThumbnails.find((x: any) => x.quality == 'maxresdefault').url;
         return <VideoThumbnail
             key={video.videoId}
             onThumbnailClick={onThumbnailClick}
-            author={video.author} title={video.title} url={thumbnail.url} videoId={video.videoId}
+            author={video.author} title={video.title} url={thumbnailUrl} videoId={video.videoId}
         />
     })
 
