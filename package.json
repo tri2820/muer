@@ -17,7 +17,7 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "ntl:ci": "netlify dev",
     "start": "cross-env NODE_ENV=production netlify dev",
-    "start-remixappserver": "dotenv remix-serve build",
+    "selfhost": "dotenv remix-serve build",
     "typecheck": "tsc -b"
   },
   "prettier": {},
