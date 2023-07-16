@@ -582,15 +582,18 @@ export default function App() {
                 ...p,
                 playing: false
               }))}
-              onEnded={() => setPlayerState(p => ({
-                ...p,
-                playing: false,
-                played: 0,
-                playedSeconds: 0,
-                loaded: 0,
-                loadedSeconds: 0,
-                progressValues: [0]
-              }))}
+              onEnded={() => {
+                setPlayerState(p => ({
+                  ...p,
+                  playing: false,
+                  played: 0,
+                  playedSeconds: 0,
+                  loaded: 0,
+                  loadedSeconds: 0,
+                  progressValues: [0]
+                }))
+                playerRef?.current?.seekTo(0, 'fraction')}
+              }
               onBuffer={() => {
                 console.log('Start buffering')
                 if (!playerState.playing) return;
