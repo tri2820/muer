@@ -87,7 +87,7 @@ export default function RadioPage() {
                         }}
                         className="group/row cursor-pointer transition-all duration-150 ">
                                         <td className="w-16 pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400">
-                                            <span className="group-hover/row:hidden">{1 + i}</span>
+                                            <span className="group-hover/row:hidden">{2 + i}</span>
                                             <span className="hidden group-hover/row:block text-white">{
                                                 <PlayIcon className="w-4 h-4"/>
                                             }</span>
