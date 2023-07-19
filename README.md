@@ -16,11 +16,11 @@ Muer is based on Invidious.
 # Development
 Run following commands to start coding & contributing to Muer
 ```sh
-  git clone https://github.com/muer-org/muer # Clone the repo
-  cd muer
-  npm install # Install dependencies
-  cp .env.sample .env # Create the .env file
-  npm run dev # Start the development server
+git clone https://github.com/muer-org/muer # Clone the repo
+cd muer
+npm install # Install dependencies
+cp .env.sample .env # Create the .env file
+npm run dev # Start the development server
 ```
 
 # Hosting
@@ -42,7 +42,9 @@ You may need to deploy again
 
 
 ## Self-hosting
-Run following commands to start production server on your own machine
+Guide to start production server on your own machine.
+
+### Method 1: Clone & Run
 ```sh
 git clone https://github.com/muer-org/muer # Clone the repo
 cd muer
@@ -51,6 +53,11 @@ cp .env.sample .env # Create the .env file
 cp remix.config.selfhost.js remix.config.js # Use the self-hosting config
 npm run build
 npm run selfhost
+```
+
+### Method 2: Docker
+```sh
+docker run -p 3000:3000 muerorg/muer
 ```
 
 ## Host on other platforms
