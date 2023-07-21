@@ -196,6 +196,7 @@ export default function App() {
   const playerRef = useRef<ReactPlayer | null>(null);
   const [seekedOnce, setSeekedOnce] = useState(false);
   const [libraryHeaderShowShadow, setLibraryHeaderShowShadow] = useState(false);
+  const [resizableWidth, setResizableWidth] = useState(400);
 
   return (
     <html lang="en" className="h-full scrollbar-none">
@@ -218,6 +219,7 @@ export default function App() {
           <div className="flex-grow flex mt-2 h-0 mx-2">
             <ResizableBox
               className="flex"
+              onResize={ (_, { size }) => setResizableWidth(size.width) }
               width={400}
               handle={<div className="h-full w-2 hover:cursor-e-resize flex-none 
           opacity-0 hover:opacity-100
@@ -235,7 +237,9 @@ export default function App() {
           flex
           flex-col
           space-y-2
-          ">
+          "
+          style={{width: resizableWidth + 'px'}}
+          >
 
                 <div className="bg-neutral-900 rounded-lg px-6 py-4 flex-none space-y-6">
                   <NavLink to='/' className={({ isActive, isPending }) =>
