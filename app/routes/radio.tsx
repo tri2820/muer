@@ -23,7 +23,7 @@ export default function RadioPage() {
     const currentPosition = playingVideoData?.recommendedVideos.findIndex((x: any) => x.videoId == playingVideoData.videoId) ?? 0;
     const upcomingVideos = playingVideoData?.recommendedVideos.slice(currentPosition + 1)
 
-    return <div className="p-6 pt-16">
+    return <div className="p-6 pt-16 @container/playlist">
             
         <p className="font-bold text-2xl text-white my-6">Radio</p>
         
@@ -46,17 +46,17 @@ export default function RadioPage() {
                         }}
                         className="group/row cursor-pointer transition-all duration-150 ">
                                         <td className="w-16 pl-6 group-hover/row:bg-white/8 rounded-l-lg text-green-500">
-                                            <span className="group-hover/row:hidden">
-                                            <Lottie
-                                            // lottieRef={lottieRef}
-                                            autoplay={true}
-                                            loop={true}
-                                            animationData={spectrumAnimation}
-                                            className='w-4 h-4' />
-                                            </span>
-                                            <span className="hidden group-hover/row:block text-white">{
+                                            <div className="group-hover/row:hidden w-8 h-8 overflow-hidden relative">
+                                                <Lottie
+                                                // lottieRef={lottieRef}
+                                                autoplay={true}
+                                                loop={true}
+                                                animationData={spectrumAnimation}
+                                                className='w-16 h-16 absolute -top-4 -left-4' />
+                                            </div>
+                                            <div className="hidden group-hover/row:flex text-white w-8 h-8  items-center justify-end">{
                                                 <PlayIcon className="w-4 h-4"/>
-                                            }</span>
+                                            }</div>
                                         </td>
                                         <td className="p-3 pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail 
                                         active
@@ -102,10 +102,12 @@ export default function RadioPage() {
                         }}
                         className="group/row cursor-pointer transition-all duration-150 ">
                                         <td className="w-16 pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400">
-                                            <span className="group-hover/row:hidden">{2 + i}</span>
-                                            <span className="hidden group-hover/row:block text-white">{
+                                            <div className="group-hover/row:hidden w-8 h-8 flex items-center justify-end">
+                                                <p>{2 + i}</p>
+                                            </div>
+                                            <div className="hidden group-hover/row:flex text-white w-8 h-8  items-center justify-end">{
                                                 <PlayIcon className="w-4 h-4"/>
-                                            }</span>
+                                            }</div>
                                         </td>
                                         <td className="p-3 pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail video={video}/></td>
                                         
