@@ -40,21 +40,21 @@ export default function PlaylistPage() {
         <p className="text-red-500">Cannot find this playlist</p>
     </div>
 
-    return <div>
+    return <div className="@container/playlist">
         <div className="flex items-end space-x-4 p-6 pt-16 bg-indigo-700/70 bg-gradient-to-t from-black/50">
             
             
-                <PlaylistIcon 
-                className="shadow-lg shadow-black w-56 h-56" 
-                isHearted={isHearted}
-                iconClassName="w-24 h-24"
-                />
+            <PlaylistIcon 
+            className="shadow-lg shadow-black hidden @xl/playlist:flex h-56 w-56" 
+            isHearted={isHearted}
+            iconClassName="w-24 h-24"
+            />
             
 
-            <div className="space-y-10">
+            <div className="@xl/playlist:space-y-10 space-y-2">
                 <div className="space-y-4">
                     <p className="text-white text-sm font-bold">Playlist</p>
-                    <p className="text-white text-8xl font-extrabold">{playlist.name}</p>
+                    <p className="text-white text-3xl font-extrabold @xl/playlist:text-8xl line-clamp-1">{playlist.name}</p>
                 </div>
                 <div className="flex items-center space-x-1">
                     <MusicalNoteIcon className="w-4 h-4 text-white"/>
@@ -93,14 +93,13 @@ export default function PlaylistPage() {
                 })
             }}
             key={x.id} className="group/row cursor-pointer transition-all duration-150 ">
-                            <td className="w-16 pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400">
-                                <span className="group-hover/row:hidden">{i}</span>
-                                <span className="hidden group-hover/row:block text-white">{
-                                    <PlayIcon className="w-4 h-4"/>
-                                }</span>
-                            </td>
-                            <td className="p-3 pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail video={x}/></td>
-                            {/* <p className="text-white">{x.thumbnailBase64}</p> */}
+                <td className="w-8 @xl/playlist:w-16 pl-2 @xl/playlist:pl-6 group-hover/row:bg-white/8 rounded-l-lg text-neutral-400">
+                    <span className="group-hover/row:hidden text-sm @xl/playlist:text-base line-clamp-1">{i}</span>
+                    <span className="hidden group-hover/row:block text-white">{
+                        <PlayIcon className="w-4 h-4"/>
+                    }</span>
+                </td>
+                <td className="py-3 pr-2 @xl/playlist:px-3 @xl/playlist:pr-6 group-hover/row:bg-white/8 rounded-r-lg"><VideoListThumbnail video={x}/></td>
             </tr>
 
         })

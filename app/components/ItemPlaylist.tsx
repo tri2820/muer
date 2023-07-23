@@ -17,10 +17,10 @@ export default function ItemPlaylist({playlist}: any){
         iconClassName='w-4 h-4'
         />
 
-    <div className="space-y-1">
+    <div className="space-y-1 line-clamp-2">
         
         <p className={
-            'font-medium text-sm'
+            'font-medium text-sm line-clamp-1'
             + t(isHearted, 'text-green-500', 'text-white')
         }>
             {
@@ -28,7 +28,7 @@ export default function ItemPlaylist({playlist}: any){
             }
         </p>
       
-        <p className="text-neutral-400 font-medium text-xs">{playlist.creator}</p>
+        <p className="text-neutral-400 font-medium text-xs line-clamp-1">{playlist.creator}</p>
     </div>
   </NavLink>
 }

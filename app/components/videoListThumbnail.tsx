@@ -8,7 +8,10 @@ export default function VideoListThumbnail(props: any){
     return <div className="flex items-center space-x-4">
             
           <CImage
-              className="object-cover aspect-video w-32 rounded shadow-lg shadow-neutral-900/50"
+              className="
+              hidden
+              @xl/playlist:block
+              object-cover aspect-video w-32 rounded shadow-lg shadow-neutral-900/50"
               src={video.thumbnailUrl}
               widthLargerThan={960}
               heightLargerThan={640}

@@ -205,7 +205,13 @@ export default function App() {
   const playerRef = useRef<ReactPlayer | null>(null);
   const [seekedOnce, setSeekedOnce] = useState(false);
   const [libraryHeaderShowShadow, setLibraryHeaderShowShadow] = useState(false);
-  const [resizableWidth, setResizableWidth] = useState(400);
+  const [resizableWidth, setResizableWidth] = useState(80);
+  const [isMobile, setIsMobile] = useState(true);
+  useEffect(() => {
+    const _isMobile = window.innerWidth <= 500;
+    setIsMobile(_isMobile);
+    setResizableWidth(_isMobile ? 80 : Math.min(280, window.innerWidth / 3))
+  }, [])
 
   return (
     <html lang="en" className="h-full scrollbar-none">
@@ -229,13 +235,13 @@ export default function App() {
             <ResizableBox
               className="flex"
               onResize={ (_, { size }) => setResizableWidth(size.width) }
-              width={400}
+              width={isMobile ? 80 : Math.min(280, window.innerWidth / 3)}
               handle={<div className="h-full w-2 hover:cursor-e-resize flex-none 
           opacity-0 hover:opacity-100
           transition-opacity relative" >
                 <EllipsisVerticalIcon className="absolute w-4 h-4 text-white top-1/2 -translate-x-1" />
               </div>}
-              minConstraints={[320, -1]}
+              minConstraints={[84, -1]}
               resizeHandles={['e']}
               axis="x"
             >
@@ -256,8 +262,8 @@ export default function App() {
                   t(isActive, 'text-white', 'text-neutral-400')
                   }>
                     {({ isActive, isPending }) => <>
-                      {isActive ? <HomeIconSolid className="w-6 h-6" /> : <HomeIcon className="w-6 h-6" />}
-                      <span className="font-semibold">Home</span>
+                      {isActive ? <HomeIconSolid className="w-6 h-6 flex-none" /> : <HomeIcon className="w-6 h-6 flex-none" />}
+                      <p className="font-semibold flex-1 line-clamp-1">Home</p>
                     </>}
                     
 
@@ -268,8 +274,8 @@ export default function App() {
                     t(isActive, 'text-white', 'text-neutral-400')
                   }>
                     {({ isActive, isPending }) => <>
-                      { isActive ? <MagnifyingGlassIconSolid className="w-6 h-6" /> : <MagnifyingGlassIcon className="w-6 h-6" />}
-                      <span className="font-semibold">Search</span>
+                      { isActive ? <MagnifyingGlassIconSolid className="w-6 h-6 flex-none" /> : <MagnifyingGlassIcon className="w-6 h-6 flex-none" />}
+                      <p className="font-semibold flex-1 line-clamp-1">Search</p>
                     </>}
 
 
@@ -284,8 +290,8 @@ export default function App() {
                   <div className={"flex items-center text-neutral-400 space-x-4 px-6 flex-none py-4 "
                     + t(libraryHeaderShowShadow, 'shadow-lg shadow-black')
                   }>
-                    <RectangleStackIcon className="w-6 h-6" />
-                    <span className="font-semibold">Your Library</span>
+                    <RectangleStackIcon className="w-6 h-6 flex-none" />
+                    <p className="font-semibold flex-1 line-clamp-1">Your Library</p>
                   </div>
                   <OverlayScrollbarsComponent
                     defer
