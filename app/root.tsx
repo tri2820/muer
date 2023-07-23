@@ -243,7 +243,7 @@ export default function App() {
           transition-opacity relative" >
                 <EllipsisVerticalIcon className="absolute w-4 h-4 text-white top-1/2 -translate-x-1" />
               </div>}
-              minConstraints={[84, -1]}
+              minConstraints={[80, -1]}
               resizeHandles={['e']}
               axis="x"
             >
