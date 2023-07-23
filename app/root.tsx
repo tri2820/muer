@@ -225,7 +225,7 @@ export default function App() {
       </head>
       <body className="h-full font-inter">
       
-        <div className="min-h-screen bg-black flex flex-col">
+        <div className="min-h-full bg-black flex flex-col">
           {/* <p className="bg-purple-400 px-4 py-2">{JSON.stringify(actionData?.video)}</p> */}
           {/* <p className="bg-green-400 px-4 py-2">{JSON.stringify(playingVideoData)}</p> */}
           {
