@@ -82,7 +82,7 @@ export default function App() {
   
   const fetcher = useFetcher();
   // Walkround until https://github.com/remix-run/remix/discussions/2775 implemented
-  const [fetcherDataShouldUpdateState, setFetcherDataShouldUpdateState] = useState(false);
+  const [fetcherDataShouldUpdateState, setFetcherDataShouldUpdateState] = useState<'skip_update' | 'update_all' | 'update_keep_queue'>('skip_update');
 
   useEffect(() => {
     console.log('debug playingVideoData', playingVideoData)
@@ -97,7 +97,7 @@ export default function App() {
       return
     }
 
-    if (!fetcherDataShouldUpdateState) {
+    if (fetcherDataShouldUpdateState == 'skip_update') {
       console.log('Should not update state, fetcher.data could have called effect because user navigated')
       return 
     }
@@ -108,9 +108,17 @@ export default function App() {
 
     setPlayingVideoData((v: any) => {
       if (!v) return video
-      return {
-        ...video,
-        videoThumbnails: v.videoThumbnails,
+      if (fetcherDataShouldUpdateState == 'update_keep_queue') {
+        return {
+          ...video,
+          videoThumbnails: v.videoThumbnails,  
+          recommendedVideos: v.recommendedVideos
+        }
+      } else {
+        return {
+          ...video,
+          videoThumbnails: v.videoThumbnails
+        }
       }
     });
 
@@ -122,7 +130,7 @@ export default function App() {
       error: false
     }))
 
-    setFetcherDataShouldUpdateState(false)
+    setFetcherDataShouldUpdateState('skip_update')
   }, [fetcher.data])
 
   useEffect(() => {
@@ -148,7 +156,7 @@ export default function App() {
     setPlaylists([...playlists])
   }
 
-  const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any) => {
+  const onThumbnailClick = async ({ videoId, thumbnailUrl, title, author }: any, keepQueue = false) => {
     console.log('clicked', videoId);
     if (videoId == playingVideoData?.videoId) {
       setPlayerState((p) => ({
@@ -158,14 +166,15 @@ export default function App() {
       return;
     }
 
-    setPlayingVideoData({
+    setPlayingVideoData((p) => ({
+      recommendedVideos: p?.recommendedVideos ?? [],
       videoThumbnails: [{
         url: thumbnailUrl
       }],
       title,
       author,
       videoId
-    })
+    }))
 
     setPlayerState((p) => ({
       ...p,
@@ -186,7 +195,7 @@ export default function App() {
     // );
     // if (fetcher.state === "idle" && fetcher.data == null) {
     fetcher.load(`/videoData/${videoId}`);
-    setFetcherDataShouldUpdateState(true)
+    setFetcherDataShouldUpdateState(keepQueue ? 'update_keep_queue' : 'update_all')
     // }
 
   }
@@ -586,7 +595,7 @@ export default function App() {
                 ...p,
                 playing: false
               }))}
-              onEnded={() => {
+              onQueueEnded={() => {
                 setPlayerState(p => ({
                   ...p,
                   playing: false,
@@ -624,8 +633,8 @@ export default function App() {
               // Try only one url
               // Fallback to youtube embed
               urls={
-                [playingVideoData?.adaptiveFormats?.at(0)?.url,
-                `https://www.youtube.com/watch?v=${playingVideoData?.videoId}`
+                [
+                  playingVideoData?.adaptiveFormats?.at(0)?.url, `https://www.youtube.com/watch?v=${playingVideoData?.videoId}`
                 ]
               }
               volume={playerState.volume}

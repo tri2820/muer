@@ -1,7 +1,10 @@
 import { Video } from "~/atoms";
 import CImage from "./cimage";
+import { t } from "~/utils";
 
-export default function VideoListThumbnail({video}: {video: Video}){
+export default function VideoListThumbnail(props: any){
+    const {video, active = false} = props;
+    
     return <div className="flex items-center space-x-4">
             
           <CImage
@@ -12,7 +15,7 @@ export default function VideoListThumbnail({video}: {video: Video}){
           />
 
           <div className="space-y-2">
-              <p className="text-white font-medium line-clamp-1">{video.title}</p>
+              <p className={'font-medium line-clamp-1' + t(active, 'text-green-500', 'text-white')}>{video.title}</p>
               <p className=" text-neutral-400 font-medium line-clamp-1">{video.author}</p>
           </div>
           </div>
