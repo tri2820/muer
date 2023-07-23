@@ -210,7 +210,9 @@ export default function App() {
   useEffect(() => {
     const _isMobile = window.innerWidth <= 500;
     setIsMobile(_isMobile);
-    setResizableWidth(_isMobile ? 80 : Math.min(280, window.innerWidth / 3))
+    if (!_isMobile) {
+      setResizableWidth(Math.min(280, window.innerWidth / 3));
+    }
   }, [])
 
   return (
@@ -339,21 +341,21 @@ export default function App() {
 
           </div>
 
-          <div className="flex-none bg-black h-20 grid grid-cols-11 px-4 space-x-4">
-            <div className="col-span-3 flex space-x-4 items-center">
+          <div className="flex-none bg-black h-20 grid space-x-4  grid-cols-3 sm:grid-cols-9 sm:px-4 overflow-hidden">
+            <div className="col-span-3 flex space-x-4 items-center px-4 sm:px-0">
               <CImage
-                className="w-24 aspect-video object-cover rounded-lg flex-none"
+                className="w-24 aspect-video object-cover rounded-lg flex-none select-none"
                 src={playingVideoData?.videoThumbnails?.at(0)?.url}
                 widthLargerThan={960}
                 heightLargerThan={640}
               />
-              <div className="flex-shrink">
-                <p className="text-sm text-white font-semibold line-clamp-1">{
+              <div className="flex-grow sm:flex-grow-0">
+                <p className="text-sm text-white font-semibold line-clamp-1 select-none">{
                   playingVideoData?.musicTracks?.at(0).song ||
                   playingVideoData?.title ||
                   'No Title Playing'
                 }</p>
-                <p className="text-xs text-neutral-400 line-clamp-1">{
+                <p className="text-xs text-neutral-400 line-clamp-1 select-none">{
                   playingVideoData?.musicTracks?.at(0).artist ||
                   playingVideoData?.author ||
                   'Author'
@@ -363,14 +365,29 @@ export default function App() {
               {
                 playingVideoData &&
                 <div className="flex-none">
-                <HeartButton playingVideoData={playingVideoData} onHeartClick={onHeartClick} hearted={
-                  playlists.find(x => x.type == 'hearted')?.videos.some((video) => video.id == playingVideoData.videoId)
-                }/>
-              </div>
+                  <HeartButton playingVideoData={playingVideoData} onHeartClick={onHeartClick} hearted={
+                    playlists.find(x => x.type == 'hearted')?.videos.some((video) => video.id == playingVideoData.videoId)
+                  }/>
+                </div>
               }
+
+              
+              <button
+                      className={'sm:hidden' + t(playingVideoData != undefined, 'hover:scale-105', 'opacity-70')}
+                      onClick={() => {
+                        if (playingVideoData == undefined) return;
+                        setPlayerState((p) => ({ ...p, playing: !p.playing }));
+                      }}>
+                      {
+                        playerState.playing ?
+                          <PauseCircleIcon className="w-10 h-10 text-white" /> :
+                          <PlayCircleIcon className="w-10 h-10 text-white" />
+                      }
+              </button>
+              
             </div>
 
-            <div className="col-span-5 flex items-center ">
+            <div className="col-span-3 items-center hidden  sm:flex">
               <div className="space-y-1 w-full ">
                 <div className="flex justify-center">
                   <div className="flex items-center space-x-3">
@@ -466,77 +483,79 @@ export default function App() {
               </div>
             </div>
 
-            <div className="col-span-3 flex items-center space-x-2 justify-end ">
-              <NavLink to='/radio' className={({ isActive, isPending }) =>
-              'relative hover:scale-105' + 
-                  t(isActive, 'text-green-500 active', 'text-neutral-400 hover:text-white ')}>
-                    {({ isActive, isPending }) => <>
-                      <QueueListIcon className="w-6 h-6 flex-none" />
-                      { isActive && <p className="absolute w-full text-center -bottom-4">•</p> }
-                    </>
-                    }
-              </NavLink>
-              <SpeakerWaveIcon className="w-6 h-6 text-neutral-400 flex-none" />
-              {/* <div className="h-1 bg-white w-1/2 rounded-full flex-shrink" /> */}
-              <div className="w-1/2 flex-shrink">
-              <Range
-                    step={0.001}
-                    min={0}
-                    max={1}
-                    values={[playerState.volume]}
-                    onChange={(values: any) => {
-                      setPlayerState((p) => ({
-                        ...p,
-                        volume: values.at(0)
-                      }))
+            <div className="col-span-3 items-center space-x-2 justify-end hidden  sm:flex">
+            <NavLink to='/radio' className={({ isActive, isPending }) =>
+            'relative hover:scale-105' + 
+                t(isActive, 'text-green-500 active', 'text-neutral-400 hover:text-white ')}>
+                  {({ isActive, isPending }) => <>
+                    <QueueListIcon className="w-6 h-6 flex-none" />
+                    { isActive && <p className="absolute w-full text-center -bottom-4">•</p> }
+                  </>
+                  }
+            </NavLink>
+            <SpeakerWaveIcon className="w-6 h-6 text-neutral-400 flex-none" />
+            {/* <div className="h-1 bg-white w-1/2 rounded-full flex-shrink" /> */}
+            <div className="w-1/2 flex-shrink">
+            <Range
+                  step={0.001}
+                  min={0}
+                  max={1}
+                  values={[playerState.volume]}
+                  onChange={(values: any) => {
+                    setPlayerState((p) => ({
+                      ...p,
+                      volume: values.at(0)
+                    }))
 
-                    }}
-                    onFinalChange={(values: any) => {
-                      setPlayerState((p) => ({
-                        ...p,
-                        volume: values.at(0)
-                      }))
-                      // playerRef?.current?.seekTo(values[0])
-                    }}
-                    renderTrack={({ props, children }) => (
+                  }}
+                  onFinalChange={(values: any) => {
+                    setPlayerState((p) => ({
+                      ...p,
+                      volume: values.at(0)
+                    }))
+                    // playerRef?.current?.seekTo(values[0])
+                  }}
+                  renderTrack={({ props, children }) => (
+                    <div
+                      onMouseDown={props.onMouseDown}
+                      onTouchStart={props.onTouchStart}
+                      className='w-full py-1 group flex '
+                      style={props.style}
+                    >
                       <div
-                        onMouseDown={props.onMouseDown}
-                        onTouchStart={props.onTouchStart}
-                        className='w-full py-1 group flex '
-                        style={props.style}
-                      >
-                        <div
-                          className='w-full h-1 rounded-full overflow-hidden bg-white group-hover:bg-green-500'>
-                          <div ref={props.ref}
-                            style={{
-                              background: getTrackBackground({
-                                values: [playerState.volume],
-                                colors: [
-                                  "transparent", '#525252'],
-                                min: 0,
-                                max: 1
-                              })
-                            }}
-                            className="w-full h-1">
-                            {children}
-                          </div>
+                        className='w-full h-1 rounded-full overflow-hidden bg-white group-hover:bg-green-500'>
+                        <div ref={props.ref}
+                          style={{
+                            background: getTrackBackground({
+                              values: [playerState.volume],
+                              colors: [
+                                "transparent", '#525252'],
+                              min: 0,
+                              max: 1
+                            })
+                          }}
+                          className="w-full h-1">
+                          {children}
                         </div>
-
                       </div>
-                    )}
-                    renderThumb={({ props, isDragged }) => (
-                      <div
-                        className='invisible group-hover:visible focus:outline-none h-3 w-3 rounded-full shadow bg-white'
-                        {...props}
-                        style={{
-                          ...props.style,
-                          ...(isDragged && { visibility: 'visible' })
-                        }}
-                      />
-                    )}
-                  />
-                  </div>
-            </div>
+
+                    </div>
+                  )}
+                  renderThumb={({ props, isDragged }) => (
+                    <div
+                      className='invisible group-hover:visible focus:outline-none h-3 w-3 rounded-full shadow bg-white'
+                      {...props}
+                      style={{
+                        ...props.style,
+                        ...(isDragged && { visibility: 'visible' })
+                      }}
+                    />
+                  )}
+                />
+                </div>
+          </div>
+
+            
 
             <Player
               playerRef={playerRef}
