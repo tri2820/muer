@@ -1,4 +1,4 @@
-name: ci
+name: auto-build-docker-image
 
 on:
   push:
