@@ -33,6 +33,7 @@ export default function Player({
     }
 
     return <ReactPlayer
+        playsInline
         ref={playerRef}
         onBuffer={onBuffer}
         onBufferEnd={onBufferEnd}
