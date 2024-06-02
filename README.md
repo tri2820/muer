@@ -1,3 +1,11 @@
+Maintenance Notice
+Hey everyone,
+
+Just a heads up that this project is no longer being maintained. Unfortunately, loading YouTube videos has become too unreliable (they don't always play), and there's nothing we can do to fix it. 😔
+
+Thanks for your understanding!
+
+
 # Muer
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new/muer-org/muer?quickstart=1)
 
