@@ -1,4 +1,4 @@
-Maintenance Notice
+# Maintenance Notice
 Hey everyone,
 
 Just a heads up that this project is no longer being maintained. Unfortunately, loading YouTube videos has become too unreliable (they don't always play), and there's nothing we can do to fix it. 😔
